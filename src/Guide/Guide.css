@@ -1,0 +1,47 @@
+.Guide .col {
+  border: 1px solid black;
+  display: inline-block;
+  min-width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.Guide .row {
+  min-height: 40px;
+  display: inline-grid;
+}
+
+.Guide .rows .col {
+  transform: rotate(90deg);
+}
+
+.Guide .divider {
+  display: block;
+  min-height: 20px;
+}
+
+.Guide .text {
+  vertical-align: middle;
+}
+
+@media print {
+  .Grid {
+    display: none;
+  }
+  button {
+    display: none;
+  }
+  .Guide .col {
+    min-width: 0.75in;
+    height: 0.75in;
+    line-height: 0.75in;
+    font-size: 0.5in;
+  }
+  .Guide .row {
+    min-height: 0.75in;
+  }
+  .Guide .divider {
+    display: inline-block;
+    min-width: 0.5in;
+  }
+}

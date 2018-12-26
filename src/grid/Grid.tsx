@@ -1,0 +1,65 @@
+import * as React from 'react';
+import './Grid.css';
+import Pixel from '../Pixel';
+
+export interface IProps {
+    width: number;
+    height: number;
+    onGridChanged: (grid: Pixel[][]) => void;
+}
+
+interface IState {
+    grid: Pixel[][];
+}
+
+class Grid extends React.Component<IProps, IState> {
+
+    constructor(props: IProps){
+        super(props);
+        this.state = {
+            grid: this.generateGrid(props.width, props.height)
+        }
+    }
+
+    private generateGrid(width: number, height: number){
+        let grid: Pixel[][] = [];
+        for(let i = 0; i < width; i++){
+            let col: Pixel[] = [];
+            for (let j = 0; j < height; j++) {
+                col.push(new Pixel());
+            }
+            grid.push(col);
+        }
+        return grid;
+    }
+
+    public render() {
+
+        if(!this.state.grid ||
+            this.state.grid.length != this.props.width ||
+            this.state.grid[0].length != this.props.height) {
+            this.setState({grid: this.generateGrid(this.props.width, this.props.height)});
+            console.log(this.state.grid.length);
+            console.log(this.state.grid[0].length);
+        }
+
+        return (
+            <div className="Grid">
+                {this.state.grid.map(row => 
+                    <div className="row">
+                        {row.map(item => 
+                            <div className={"col" + (item.isBlack ? " black" : "")}
+                            onClick={() => {
+                                item.pixelClicked();
+                                this.props.onGridChanged(this.state.grid);
+                                this.setState(this.state);
+                            }} />
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+}
+
+export default Grid;
