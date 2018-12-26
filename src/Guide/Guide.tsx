@@ -1,14 +1,18 @@
 import * as React from 'react';
 import './Guide.css';
 import Pixel from '../Pixel';
+import qrCode from '../assets/self-link-qr.png';
 
 export interface IProps {
     grid: Pixel[][];
 }
 
+type QRCode = 'QRCode';
+type GuideData = number | QRCode;
+
 interface IState {
-    rows: number[][];
-    cols: number[][];
+    rows: GuideData[][];
+    cols: GuideData[][];
 }
 
 class Guide extends React.Component<IProps, IState> {
@@ -28,7 +32,7 @@ class Guide extends React.Component<IProps, IState> {
                 cols: []
             };
         }
-        let cols: number[][] = [];
+        let cols: GuideData[][] = [];
         for(let i = 0; i < width; i++){
             let col: number[] = [];
             let runLength = 0;
@@ -52,7 +56,7 @@ class Guide extends React.Component<IProps, IState> {
         }
         
         
-        let rows: number[][] = [];
+        let rows: GuideData[][] = [];
         for(let i = 0; i < height; i++){
             let row: number[] = [];
             let runLength = 0;
@@ -73,6 +77,12 @@ class Guide extends React.Component<IProps, IState> {
                 row.unshift(NaN);
             }
             rows.push(row);
+        }
+
+        if(Number.isNaN(rows[0][0] as number)) {
+            rows[0][0] = 'QRCode';
+        } else if(Number.isNaN(cols[0][0] as number)) {
+            cols[0][0] = 'QRCode';
         }
         return {
             rows,
@@ -107,7 +117,11 @@ class Guide extends React.Component<IProps, IState> {
                             <div className="row">
                                 {row.map(item => 
                                     <div className="col">
-                                        <span className="text">{Number.isNaN(item) ? "" : item}</span>
+                                        { item == 'QRCode' ?
+                                            <img src={qrCode} className="qr-code" alt="logo" /> :
+                                            <span className="text">{Number.isNaN(item) ? "" : item}</span>
+                                        }
+          
                                     </div>
                                 )}
                             </div>
@@ -119,7 +133,10 @@ class Guide extends React.Component<IProps, IState> {
                             <div className="row">
                                 {col.map(item => 
                                     <div className="col">
-                                        <span className="text">{Number.isNaN(item) ? "" : item}</span>
+                                        { item == 'QRCode' ?
+                                            <img src={qrCode} className="qr-code" alt="logo" /> :
+                                            <span className="text">{Number.isNaN(item) ? "" : item}</span>
+                                        }
                                     </div>
                                 )}
                             </div>
