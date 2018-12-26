@@ -33,6 +33,8 @@ class Grid extends React.Component<IProps, IState> {
         return grid;
     }
 
+    private isDragging = false;
+
     public render() {
 
         if(!this.state.grid ||
@@ -43,17 +45,31 @@ class Grid extends React.Component<IProps, IState> {
             console.log(this.state.grid[0].length);
         }
 
+        let updatePixel = (pixel: Pixel) => {
+            pixel.pixelClicked();
+            this.props.onGridChanged(this.state.grid);
+            this.setState(this.state);
+        }
+
         return (
             <div className="Grid">
                 {this.state.grid.map(row => 
                     <div className="row">
                         {row.map(item => 
                             <div className={"col" + (item.isBlack ? " black" : "")}
-                            onClick={() => {
-                                item.pixelClicked();
-                                this.props.onGridChanged(this.state.grid);
-                                this.setState(this.state);
-                            }} />
+                                onMouseEnter={() => {
+                                    if(this.isDragging){
+                                        updatePixel(item);
+                                    }
+                                }}
+                                onMouseDown={() => {
+                                    this.isDragging = true;
+                                    updatePixel(item);
+                                }}
+                                onMouseUp={() => {
+                                    this.isDragging = false;
+                                }}
+                            />
                         )}
                     </div>
                 )}
