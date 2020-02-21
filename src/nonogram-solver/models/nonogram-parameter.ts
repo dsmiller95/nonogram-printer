@@ -8,7 +8,7 @@ export interface SolvedNonogram {
 }
 
 export enum NonogramCell{
-    UNSET,
-    SET,
-    UNKNOWN
+    UNSET = 0,
+    SET = 1,
+    UNKNOWN = 2
 }

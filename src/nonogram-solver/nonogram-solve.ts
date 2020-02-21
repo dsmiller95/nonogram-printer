@@ -20,6 +20,7 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
     if(!slice.some(cell => cell !== NonogramCell.UNKNOWN)){
         return solveEmptySlice(slice.length, sliceNumbers);
     }
+    
     if(sliceNumbers.length <= 0){
         return slice.map(() => NonogramCell.UNSET);
     }
@@ -33,6 +34,9 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
 
 function solveEmptySlice(sliceLength: number, sliceNumbers: number[]): NonogramCell[] {
     const totalActiveSquares = sliceNumbers.reduce((sum, current) => sum + current, 0);
+    if(totalActiveSquares === 0){
+        return Array(sliceLength).fill(NonogramCell.UNSET);
+    }
     const placementVariance = sliceLength - (totalActiveSquares + sliceNumbers.length - 1);
     let newSlice: NonogramCell[] = Array(sliceLength).fill(NonogramCell.UNKNOWN);
     var currentIndexInSlice = 0;
