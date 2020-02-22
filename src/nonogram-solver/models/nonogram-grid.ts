@@ -1,4 +1,5 @@
 import { NonogramCell } from './nonogram-parameter';
+import * as md5 from 'md5';
 
 export class NonogramGrid {
 
@@ -17,6 +18,14 @@ export class NonogramGrid {
             return this.gridData[0]?.length ?? 0;
         }
         throw `Dimension ${dimension} not supported yet`;
+    }
+
+    /**
+     * Return a unique identifier based on the current state of the grid
+     */
+    public getGridHash(): string{
+        return md5(this.gridData
+            .flatMap(x => x));
     }
     
     public applySliceAcrossArray(

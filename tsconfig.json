@@ -2,9 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build/dist",
-    "module": "esnext",
+    "module": "ESNext",
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": ["ESNext", "dom"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",

@@ -4,10 +4,14 @@ import { NonogramGrid } from './models/nonogram-grid';
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    furtherSolveByDimension(workingGrid, 0, nonogramKey.firstDimensionNumbers);
-    furtherSolveByDimension(workingGrid, 1, nonogramKey.secondDimensionNumbers);
+    solveByEachDimension(workingGrid, nonogramKey);
 
     return {gridData: workingGrid.gridData};
+}
+
+function solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey){
+    furtherSolveByDimension(workingGrid, 0, key.firstDimensionNumbers);
+    furtherSolveByDimension(workingGrid, 1, key.secondDimensionNumbers);
 }
 
 function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]){

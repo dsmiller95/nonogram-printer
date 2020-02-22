@@ -5,6 +5,7 @@
   "homepage": "https://dsmiller95.github.io/nonogram-printer",
   "dependencies": {
     "gh-pages": "^2.0.1",
+    "md5": "^2.2.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts-ts": "3.1.0",
@@ -19,6 +20,7 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/md5": "^2.1.33",
     "@types/node": "^13.7.4",
     "@types/jest": "^23.3.10",
     "@types/react": "^16.7.18",

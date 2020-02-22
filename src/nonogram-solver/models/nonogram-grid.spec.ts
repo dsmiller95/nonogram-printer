@@ -1,7 +1,7 @@
 import { NonogramGrid } from './nonogram-grid';
 import { NonogramCell } from './nonogram-parameter';
 import { rowFromString, gridFromString } from '../nonogram-solve.spec';
-fdescribe('nonogram grid data model', () => {
+describe('nonogram grid data model', () => {
     describe('when creating a new grid', () => {
         it('should start with unknown values', () => {
             const result = new NonogramGrid(3, 4);
@@ -45,6 +45,38 @@ OOX
         it('should get a slice in the second dimension', () => {
             const result = grid.getSliceAcrossArray(1, 0);
             expect(result).toEqual(rowFromString('XXO'));
+        });
+    });
+    describe('when getting a fingerprint of the grid data', () => {
+        let grid: NonogramGrid;
+        beforeEach(() => {
+            grid = new NonogramGrid(3, 3);
+            grid.gridData = gridFromString(
+`
+XXX
+XOO
+OOX
+`
+            );
+        });
+
+        it('should change the fingerprint when a value changes', () => {
+            const lastHash = grid.getGridHash();
+            grid.gridData[1][1] = NonogramCell.SET;
+            expect(grid.getGridHash()).not.toEqual(lastHash);
+        });
+
+        it('should have the same fingerprint if the data is the same', () => {
+            const lastHash = grid.getGridHash();
+            grid = new NonogramGrid(3, 3);
+            grid.gridData = gridFromString(
+`
+XXX
+XOO
+OOX
+`
+            );
+            expect(grid.getGridHash()).toEqual(lastHash);
         });
     });
 });
