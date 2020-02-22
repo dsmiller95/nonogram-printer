@@ -29,7 +29,31 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
             return slice.map(() => NonogramCell.SET);
         }
     }
-    return slice;
+
+    const possiblePermutations = Array.from(generateAllPossibleSlicePermutations(slice, sliceNumbers));
+    const reducedResult = reduceMultiplePermutations(possiblePermutations);
+
+    return reducedResult;
+}
+
+/**
+ * Reduce a collection of permutations into their commonalities. If only cell in all of the permutations
+ *  is always the same value, it will be set to that value in the output. If the cell is not always exactly the same value,
+ *  it will be set to Unknown
+ * @param slicePermutations a list of concrete slice solutions. Any cells marked as Unknown in any permutation will come out as Unknown
+ */
+export function reduceMultiplePermutations(slicePermutations: NonogramCell[][]): NonogramCell[]{
+    const resultSlice = new Array(slicePermutations[0].length).fill(undefined);
+    return resultSlice.map((cell, index) => {
+        let cellValue = slicePermutations[0][index];
+        for(let permutation = 1; permutation < slicePermutations.length; permutation++){
+            const currentCell = slicePermutations[permutation][index];
+            if(currentCell !== cellValue){
+                return NonogramCell.UNKNOWN;
+            }
+        }
+        return cellValue;
+    });
 }
 
 function solveEmptySlice(sliceLength: number, sliceNumbers: number[]): NonogramCell[] {

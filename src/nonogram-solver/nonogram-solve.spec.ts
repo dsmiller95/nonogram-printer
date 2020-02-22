@@ -1,4 +1,4 @@
-import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator } from './nonogram-solve';
+import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations } from './nonogram-solve';
 import { NonogramCell } from './models/nonogram-parameter';
 
 /**
@@ -80,7 +80,7 @@ describe('when solving a whole grid', () => {
     });
 });
 
-describe('when solving a single row ', () => {
+describe('when solving a single empty row', () => {
     it('should partially solve single number in larger row', () => {
         const result = attemptToFurtherSolveSlice(Array(5).fill(NonogramCell.UNKNOWN), [4]);
         expect(result).toEqual([
@@ -150,21 +150,9 @@ describe('when solving a single row ', () => {
             NonogramCell.UNKNOWN,
             NonogramCell.UNKNOWN]);
     });
-    it('should finish solving a partially solved row', () => {
-        const inputRow = [
-            NonogramCell.UNKNOWN,
-            NonogramCell.UNKNOWN,
-            NonogramCell.SET,
-        ];
-        const result = attemptToFurtherSolveSlice(inputRow, [1]);
-        expect(result).toEqual([
-            NonogramCell.UNSET,
-            NonogramCell.UNSET,
-            NonogramCell.SET]);
-    });
 });
 
-fdescribe('when generating all possible row permutations', () => {
+describe('when generating all possible row permutations', () => {
     it('should generate one permutation for a completely full row', () => {
         const iterResult = generateAllPossibleSlicePermutations(
             rowFromString('      '),
@@ -258,4 +246,49 @@ XXOOOXOXXX
 XXOXOXXXOO
 `));
     });
-})
+});
+
+describe('when reducing a list of possibilities to their common elements', () => {
+    it('should reduce a single permutation to the same thing', () => {
+        const result = reduceMultiplePermutations([rowFromString('OXXXO')]);
+        expect(result).toEqual(rowFromString('OXXXO'));
+    });
+    it('should reduce three permutations to the commonalities', () => {
+        const result = reduceMultiplePermutations(gridFromString(
+`
+XXXOO
+OXXXO
+OOXXX
+`));
+        expect(result).toEqual(rowFromString('  X  '));
+    });
+    it('should reduce a cell with an unknown value to unknown', () => {
+        const result = reduceMultiplePermutations(gridFromString(
+`
+XX O
+OXXX
+`));
+        expect(result).toEqual(rowFromString(' X  '));
+    });
+});
+
+describe('when further solving a single partially-filled row', () => {
+    it('should completely solve the row when possible based on already set cells', () => {
+        const result = attemptToFurtherSolveSlice(
+            rowFromString(' O   '),
+            [3]);
+        expect(result).toEqual(rowFromString('OOXXX'));
+    });
+    it('should solve more of a row that is partially solved', () => {
+        const result = attemptToFurtherSolveSlice(
+            rowFromString(' O    '),
+            [3]);
+        expect(result).toEqual(rowFromString('OO XX '));
+    });
+    it('should solve more of a complex row that is partially solved', () => {
+        const result = attemptToFurtherSolveSlice(
+            rowFromString('    O           '),
+            [3, 5, 1]);
+        expect(result).toEqual(rowFromString('    O    X      '));
+    });
+});
