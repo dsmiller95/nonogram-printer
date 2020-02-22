@@ -1,4 +1,4 @@
-import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations } from './nonogram-solve';
+import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator } from './nonogram-solve';
 import { NonogramCell } from './models/nonogram-parameter';
 
 /**
@@ -229,7 +229,7 @@ OXXOOXOXXX
 OOXXOXOXXX
 `));
     });
-    fit('should generate permutations based on what is already in the row', () => {
+    it('should generate permutations based on what is already in the row', () => {
         const iterResult = generateAllPossibleSlicePermutations(
             rowFromString('  O    X  '),
             [2, 1, 3]
@@ -244,6 +244,18 @@ XXOXOOOXXX
 XXOOXOXXXO
 XXOOXOOXXX
 XXOOOXOXXX
+`));
+    });
+    it('should generate permutations based on what is already in the row without using the utility entry function', () => {
+        const iterResult = slicePermutationGenerator(
+            rowFromString('        O '),
+            [2, 1, 3]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(1);
+        expect(arrayResult).toEqual(gridFromString(
+`
+XXOXOXXXOO
 `));
     });
 })
