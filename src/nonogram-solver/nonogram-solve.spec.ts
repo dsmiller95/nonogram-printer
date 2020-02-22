@@ -94,6 +94,19 @@ describe('nonogram solver', () => {
                         OOXO
             `));
         });
+
+        it('partially solves a nonogram which cannot be completely solved by deduction', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [[3], [], [1, 1], [1, 1]],
+                secondDimensionNumbers: [[1, 2], [1], [1, 1], [1]]
+            });
+            expect(result.gridData).toEqual(gridFromString(`
+                        XXXO
+                        OOOO
+                        XO--
+                        XO--
+            `));
+        });
     });
 
     describe('when solving a single empty row', () => {
