@@ -1,15 +1,26 @@
 import { NonogramKey, SolvedNonogram, NonogramCell } from './models/nonogram-parameter';
 import { NonogramGrid } from './models/nonogram-grid';
 
-export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram | undefined {
-    const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
+export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
+    let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
+    workingGrid = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid) as NonogramGrid;
+
+    return {gridData: workingGrid.gridData};
+}
+
+/**
+ * If the passed in grid does not create a rule contradiction, returns a further solved grid
+ * If when trying to solve the nonogram a contradiction occurs, returns undefined
+ * @param nonogramKey the key off of which to solve the nonogram
+ * @param workingGrid The current grid the algorithm should try to solve from
+ */
+export function furtherSolveNonogramWithoutGuessing(nonogramKey: NonogramKey, workingGrid: NonogramGrid): NonogramGrid | undefined{
     let lastGridHash = '';
     while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ) {
         solveByEachDimension(workingGrid, nonogramKey);
     }
-
-    return {gridData: workingGrid.gridData};
+    return workingGrid;
 }
 
 function solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey){
