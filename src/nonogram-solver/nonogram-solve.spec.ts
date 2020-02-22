@@ -15,6 +15,12 @@ const charMap = {
 function rowFromString(rowString: string){
     return Array.from(rowString).map(char => charMap[char]);
 }
+function gridFromString(gridString: string){
+    return gridString
+        .split('\n')
+        .filter(str => str.length > 0)
+        .map(string => rowFromString(string));
+}
 
 describe('when solving a whole grid', () => {
     it('solves an empty case', () => {
@@ -186,5 +192,41 @@ fdescribe('when generating all possible row permutations', () => {
         expect(arrayResult.length).toBe(2);
         expect(arrayResult[0]).toEqual(rowFromString('XXXXXO'));
         expect(arrayResult[1]).toEqual(rowFromString('OXXXXX'));
+    });
+    it('should generate many permutations for one item in a mostly empty row', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('    '),
+            [1]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(4);
+        expect(arrayResult).toEqual(gridFromString(
+`
+XOOO
+OXOO
+OOXO
+OOOX
+`));
+    });
+    it('should generate many permutations for a mostly empty row', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('          '),
+            [2, 1, 3]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(10);
+        expect(arrayResult).toEqual(gridFromString(
+`
+XXOXOXXXOO
+XXOXOOXXXO
+XXOXOOOXXX
+XXOOXOXXXO
+XXOOXOOXXX
+XXOOOXOXXX
+OXXOXOXXXO
+OXXOXOOXXX
+OXXOOXOXXX
+OOXXOXOXXX
+`));
     });
 })

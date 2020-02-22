@@ -69,11 +69,11 @@ function* slicePermutationGenerator(
     sliceStartIndex: number = 0,
     sliceEnd: number = currentSlice.length) : Generator<NonogramCell[], undefined, never> {
 
+    const currentSpaceLength = sliceEnd - sliceStartIndex;
     if(sliceNumbers.length === 0){
-        yield [] as NonogramCell[];
+        yield new Array(currentSpaceLength).fill(NonogramCell.UNSET);
         return;
     }
-    const currentSpaceLength = sliceEnd - sliceStartIndex;
     const minimumSpanningSpace = getMinimumSpaceForNumbers(sliceNumbers);
     if(minimumSpanningSpace > currentSpaceLength) {
         return;
