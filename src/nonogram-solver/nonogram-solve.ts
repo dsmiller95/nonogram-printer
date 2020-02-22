@@ -20,19 +20,12 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
     if(!slice.some(cell => cell !== NonogramCell.UNKNOWN)){
         return solveEmptySlice(slice.length, sliceNumbers);
     }
-    
     if(sliceNumbers.length <= 0){
         return slice.map(() => NonogramCell.UNSET);
-    }
-    for (const number of sliceNumbers) {
-        if(number === slice.length){
-            return slice.map(() => NonogramCell.SET);
-        }
     }
 
     const possiblePermutations = Array.from(generateAllPossibleSlicePermutations(slice, sliceNumbers));
     const reducedResult = reduceMultiplePermutations(possiblePermutations);
-
     return reducedResult;
 }
 
