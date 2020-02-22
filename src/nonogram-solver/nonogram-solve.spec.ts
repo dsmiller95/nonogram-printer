@@ -1,4 +1,4 @@
-import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing } from './nonogram-solve';
+import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing, checkSliceValidity } from './nonogram-solve';
 import { NonogramCell } from './models/nonogram-parameter';
 import { NonogramGrid } from './models/nonogram-grid';
 
@@ -138,7 +138,42 @@ describe('nonogram solver', () => {
             const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
             expect(result).toBeUndefined();
         });
-    })
+    });
+
+    fdescribe('when checking the validity of a row based on numbers', () => {
+        it('should return true when small numbers in unknown row', () => {
+            const result = checkSliceValidity(rowFromString('----'), [1, 1]);
+            expect(result).toBe(true);
+        });
+        it('should return false when whole unset row with one number', () => {
+            const result = checkSliceValidity(rowFromString('OOOO'), [1]);
+            expect(result).toBe(false);
+        });
+        it('should return false when whole set row with one smaller number', () => {
+            const result = checkSliceValidity(rowFromString('XXXX'), [1]);
+            expect(result).toBe(false);
+        });
+        it('should return true when whole row solved with one smaller number', () => {
+            const result = checkSliceValidity(rowFromString('OOXO'), [1]);
+            expect(result).toBe(true);
+        });
+        it('should return true when row partially solved with one smaller number', () => {
+            const result = checkSliceValidity(rowFromString('O-X-'), [1]);
+            expect(result).toBe(true);
+        });
+        it('should return true when row partially solved with two smaller number', () => {
+            const result = checkSliceValidity(rowFromString('X-XO'), [1, 1]);
+            expect(result).toBe(true);
+        });
+        it('should return false when row solved with too many X with one smaller number', () => {
+            const result = checkSliceValidity(rowFromString('X-XO'), [1]);
+            expect(result).toBe(false);
+        });
+        it('should return false when row fully incorrectly solved with two smaller number', () => {
+            const result = checkSliceValidity(rowFromString('XXOO'), [1, 1]);
+            expect(result).toBe(false);
+        });
+    });
 
     describe('when solving a single empty row', () => {
         it('should partially solve single number in larger row', () => {

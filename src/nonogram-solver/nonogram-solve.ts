@@ -37,6 +37,28 @@ function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, n
     }
 }
 
+
+export function checkSliceValidity(slice: NonogramCell[], numbersOnSlice: number[]): boolean {
+    //const workingNewSlice: NonogramCell[] = new Array(slice.length).fill(NonogramCell.UNKNOWN);
+    let indexInSlice = 0;
+    numberLoop: for (const number of numbersOnSlice) {
+        let firstValidPlacementSpot = (slice[indexInSlice] === NonogramCell.UNSET) ? -1 : indexInSlice
+        // let placementLengthCounter = 0;
+        while(indexInSlice < slice.length){
+            if(slice[indexInSlice] === NonogramCell.UNSET){
+                firstValidPlacementSpot = -1;
+            }
+            if(firstValidPlacementSpot >= 0 &&
+                indexInSlice - firstValidPlacementSpot === number) {
+                continue numberLoop;
+            }
+            indexInSlice++;
+        }
+        return false;
+    }
+    return true;
+}
+
 /**
  * 
  * @param slice a full row or column
