@@ -1,5 +1,20 @@
-import { solveNonogram, attemptToFurtherSolveSlice } from './nonogram-solve';
+import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations } from './nonogram-solve';
 import { NonogramCell } from './models/nonogram-parameter';
+
+/**
+ * X : set
+ * O : unset
+ *   : unknown
+ * @param rowString a string to transform into a row of nonogram cells
+ */
+const charMap = {
+    X: NonogramCell.SET,
+    O: NonogramCell.UNSET,
+    ' ': NonogramCell.UNKNOWN
+}
+function rowFromString(rowString: string){
+    return Array.from(rowString).map(char => charMap[char]);
+}
 
 describe('when solving a whole grid', () => {
     it('solves an empty case', () => {
@@ -142,3 +157,34 @@ describe('when solving a single row ', () => {
             NonogramCell.SET]);
     });
 });
+
+fdescribe('when generating all possible row permutations', () => {
+    it('should generate one permutation for a completely full row', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('      '),
+            [6]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(1);
+        expect(arrayResult[0]).toEqual(rowFromString('XXXXXX'));
+    });
+    it('should generate one permutation for a completely full row with two numbers', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('      '),
+            [2, 3]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(1);
+        expect(arrayResult[0]).toEqual(rowFromString('XXOXXX'));
+    });
+    it('should generate two permutations for an almost full row', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('      '),
+            [5]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(2);
+        expect(arrayResult[0]).toEqual(rowFromString('XXXXXO'));
+        expect(arrayResult[1]).toEqual(rowFromString('OXXXXX'));
+    });
+})
