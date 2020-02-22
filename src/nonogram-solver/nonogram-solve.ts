@@ -4,7 +4,10 @@ import { NonogramGrid } from './models/nonogram-grid';
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    solveByEachDimension(workingGrid, nonogramKey);
+    let lastGridHash = '';
+    while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ){
+        solveByEachDimension(workingGrid, nonogramKey);
+    }
 
     return {gridData: workingGrid.gridData};
 }
