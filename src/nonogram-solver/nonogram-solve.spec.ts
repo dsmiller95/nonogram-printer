@@ -1,5 +1,5 @@
 import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations } from './nonogram-solve';
-import { NonogramCell } from './models/nonogram-parameter';
+import { NonogramCell, SolvedNonogram } from './models/nonogram-parameter';
 
 /**
  * X : set
@@ -30,7 +30,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [],
                 secondDimensionNumbers: []
-            });
+            }) as SolvedNonogram;
             expect(result.gridData.length).toBe(0);
         });
 
@@ -38,7 +38,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[]],
                 secondDimensionNumbers: [[]]
-            });
+            }) as SolvedNonogram;
             expect(result.gridData.length).toBe(1);
             expect(result.gridData[0].length).toBe(1);
             expect(result.gridData[0][0]).toBe(NonogramCell.UNSET);
@@ -48,7 +48,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[1]],
                 secondDimensionNumbers: [[1]]
-            });
+            }) as SolvedNonogram;
             expect(result.gridData.length).toBe(1);
             expect(result.gridData[0].length).toBe(1);
             expect(result.gridData[0][0]).toBe(NonogramCell.SET);
@@ -58,7 +58,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[3], [1, 1], [3]],
                 secondDimensionNumbers: [[3], [1, 1], [3]]
-            });
+            }) as SolvedNonogram;
             expect(result.gridData.length).toBe(3);
             expect(result.gridData[0].length).toBe(3);
             expect(result.gridData).toEqual([
@@ -72,7 +72,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[1], [1], [3]],
                 secondDimensionNumbers: [[3], [1], [1]]
-            });
+            }) as SolvedNonogram;
             expect(result.gridData.length).toBe(3);
             expect(result.gridData[0].length).toBe(3);
             expect(result.gridData).toEqual(gridFromString(`
@@ -86,7 +86,7 @@ describe('nonogram solver', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[3], [], [1, 1], [1]],
                 secondDimensionNumbers: [[1, 1], [1], [1, 2], []]
-            });
+            }) as SolvedNonogram;
             expect(result.gridData).toEqual(gridFromString(`
                         XXXO
                         OOOO
@@ -100,12 +100,21 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[3], [], [1, 1], [1, 1]],
                 secondDimensionNumbers: [[1, 2], [1], [1, 1], [1]]
             });
-            expect(result.gridData).toEqual(gridFromString(`
+            expect(result).toBeDefined();
+            expect((result as SolvedNonogram).gridData).toEqual(gridFromString(`
                         XXXO
                         OOOO
                         XO--
                         XO--
             `));
+        });
+
+        it('returns nothing if the key cannot be solved', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [[2], []],
+                secondDimensionNumbers: [[], []]
+            });
+            expect(result).toBeUndefined();
         });
     });
 

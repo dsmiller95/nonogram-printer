@@ -1,11 +1,11 @@
 import { NonogramKey, SolvedNonogram, NonogramCell } from './models/nonogram-parameter';
 import { NonogramGrid } from './models/nonogram-grid';
 
-export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
+export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram | undefined {
     const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
     let lastGridHash = '';
-    while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ){
+    while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ) {
         solveByEachDimension(workingGrid, nonogramKey);
     }
 
