@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Grid.css';
-import Pixel from '../Pixel';
+import { Pixel } from '../Pixel';
 
 export interface IProps {
     width: number;
@@ -56,7 +56,7 @@ class Grid extends React.Component<IProps, IState> {
                 {this.state.grid.map(row => 
                     <div className="row">
                         {row.map(item => 
-                            <div className={"col" + (item.isBlack ? " black" : "")}
+                            <div className={"col" + (item.isBlack ? " black" : "") + (item.isYellow ? " yellow" : "")}
                                 onMouseEnter={() => {
                                     if(this.isDragging){
                                         updatePixel(item);

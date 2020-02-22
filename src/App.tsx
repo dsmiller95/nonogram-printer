@@ -3,7 +3,7 @@ import './App.css';
 
 import Grid from './grid/Grid'
 import Guide from './Guide/Guide';
-import Pixel from './Pixel';
+import { Pixel } from './Pixel';
 
 interface State {
   grid: Pixel[][];

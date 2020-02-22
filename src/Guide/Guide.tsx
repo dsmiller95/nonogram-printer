@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Guide.css';
-import Pixel from '../Pixel';
+import { Pixel } from '../Pixel';
 import qrCode from '../assets/self-link-qr.png';
 
 export interface IProps {

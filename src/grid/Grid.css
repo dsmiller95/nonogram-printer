@@ -1,6 +1,9 @@
 .black {
   background-color: black;
 }
+.yellow {
+  background-color: yellow;
+}
 
 .Grid .col {
   border: 1px solid black;
