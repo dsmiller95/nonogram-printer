@@ -229,4 +229,21 @@ OXXOOXOXXX
 OOXXOXOXXX
 `));
     });
+    fit('should generate permutations based on what is already in the row', () => {
+        const iterResult = generateAllPossibleSlicePermutations(
+            rowFromString('  O    X  '),
+            [2, 1, 3]
+        );
+        const arrayResult = Array.from(iterResult);
+        expect(arrayResult.length).toBe(6);
+        expect(arrayResult).toEqual(gridFromString(
+`
+XXOXOXXXOO
+XXOXOOXXXO
+XXOXOOOXXX
+XXOOXOXXXO
+XXOOXOOXXX
+XXOOOXOXXX
+`));
+    });
 })

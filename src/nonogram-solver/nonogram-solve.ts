@@ -58,9 +58,17 @@ export function* generateAllPossibleSlicePermutations(
 {
     const resultGen = slicePermutationGenerator(currentSlice, sliceNumbers);
     for(let result = resultGen.next(); !result.done; result = resultGen.next()){
-        yield result.value;
+        if(isSliceCompatableWithBase(currentSlice, result.value)) {
+            yield result.value;
+        }
     }
     return;
+}
+
+function isSliceCompatableWithBase(baseSlice: NonogramCell[], newSlice: NonogramCell[]){
+    return !newSlice.some((newCell, index) =>
+        baseSlice[index] !== NonogramCell.UNKNOWN &&
+        baseSlice[index] !== newCell);
 }
 
 function* slicePermutationGenerator(
