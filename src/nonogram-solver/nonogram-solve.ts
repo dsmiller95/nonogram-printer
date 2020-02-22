@@ -1,14 +1,21 @@
 import { NonogramKey, SolvedNonogram, NonogramCell } from './models/nonogram-parameter';
+import { NonogramGrid } from './models/nonogram-grid';
 
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
-    const solvedGrid = Array(nonogramKey.firstDimensionNumbers.length).fill(undefined)
-        .map(() => Array(nonogramKey.secondDimensionNumbers.length).fill(NonogramCell.UNKNOWN));
+    const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    for (let indexInFirst = 0; indexInFirst < solvedGrid.length; indexInFirst++) {
-        solvedGrid[indexInFirst] = attemptToFurtherSolveSlice(solvedGrid[indexInFirst], nonogramKey.firstDimensionNumbers[indexInFirst]);
+    furtherSolveByDimension(workingGrid, 0, nonogramKey.firstDimensionNumbers);
+
+    return {gridData: workingGrid.gridData};
+}
+
+function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]){
+    for (let indexInDimension = 0; indexInDimension < workingGrid.getDimensionSize(dimension); indexInDimension++) {
+        const furtherSolvedSlice = attemptToFurtherSolveSlice(
+            workingGrid.getSliceAcrossArray(0, indexInDimension),
+            numbersOnDimension[indexInDimension]);
+        workingGrid.applySliceAcrossArray(0, indexInDimension, furtherSolvedSlice);
     }
-
-    return {gridData: solvedGrid};
 }
 
 /**
