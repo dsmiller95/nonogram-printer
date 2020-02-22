@@ -5,6 +5,7 @@ export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     const workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
     furtherSolveByDimension(workingGrid, 0, nonogramKey.firstDimensionNumbers);
+    furtherSolveByDimension(workingGrid, 1, nonogramKey.secondDimensionNumbers);
 
     return {gridData: workingGrid.gridData};
 }
@@ -12,9 +13,9 @@ export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
 function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]){
     for (let indexInDimension = 0; indexInDimension < workingGrid.getDimensionSize(dimension); indexInDimension++) {
         const furtherSolvedSlice = attemptToFurtherSolveSlice(
-            workingGrid.getSliceAcrossArray(0, indexInDimension),
+            workingGrid.getSliceAcrossArray(dimension, indexInDimension),
             numbersOnDimension[indexInDimension]);
-        workingGrid.applySliceAcrossArray(0, indexInDimension, furtherSolvedSlice);
+        workingGrid.applySliceAcrossArray(dimension, indexInDimension, furtherSolvedSlice);
     }
 }
 
@@ -32,6 +33,9 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
     }
 
     const possiblePermutations = Array.from(generateAllPossibleSlicePermutations(slice, sliceNumbers));
+    if(possiblePermutations.length <= 0){
+        return slice;
+    }
     const reducedResult = reduceMultiplePermutations(possiblePermutations);
     return reducedResult;
 }

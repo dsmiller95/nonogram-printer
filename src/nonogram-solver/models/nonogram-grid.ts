@@ -14,7 +14,7 @@ export class NonogramGrid {
             return this.gridData.length;
         }
         if(dimension === 1){
-            return this.gridData[0].length;
+            return this.gridData[0]?.length ?? 0;
         }
         throw `Dimension ${dimension} not supported yet`;
     }

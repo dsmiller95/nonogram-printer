@@ -68,18 +68,31 @@ describe('nonogram solver', () => {
             ]);
         });
 
-        it('solves a trivial nonogram which requires both number dimensions', () => {
+        it('solves a nonogram which requires both number dimensions', () => {
             const result = solveNonogram({
                 firstDimensionNumbers: [[1], [1], [3]],
                 secondDimensionNumbers: [[3], [1], [1]]
             });
             expect(result.gridData.length).toBe(3);
             expect(result.gridData[0].length).toBe(3);
-            expect(result.gridData).toEqual([
-                [1, 0, 0],
-                [1, 0, 0],
-                [1, 1, 1],
-            ]);
+            expect(result.gridData).toEqual(gridFromString(`
+                        XOO
+                        XOO
+                        XXX
+            `));
+        });
+
+        it('solves a nonogram which requires multiple steps between dimensions', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [[3], [], [1, 1], [1]],
+                secondDimensionNumbers: [[1, 1], [1], [1, 2], []]
+            });
+            expect(result.gridData).toEqual(gridFromString(`
+                        XXXO
+                        OOOO
+                        XOXO
+                        OOXO
+            `));
         });
     });
 
