@@ -1,10 +1,16 @@
+import { NonogramGrid } from './nonogram-grid';
 export interface NonogramKey {
     firstDimensionNumbers: number[][];
     secondDimensionNumbers: number[][];
 }
 
 export interface SolvedNonogram {
-    gridData: NonogramCell[][];
+    solutions: NonogramSolution[];
+}
+
+export interface NonogramSolution {
+    solution: NonogramGrid;
+    numberOfGuesses: number;
 }
 
 export enum NonogramCell{

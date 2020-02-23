@@ -4,9 +4,12 @@ import { NonogramGrid } from './models/nonogram-grid';
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    workingGrid = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid) as NonogramGrid;
+    const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid) as NonogramGrid;
 
-    return {gridData: workingGrid.gridData};
+    return {solutions: [{
+        solution: result,
+        numberOfGuesses: 0
+    }]};
 }
 
 /**
@@ -18,23 +21,33 @@ export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
 export function furtherSolveNonogramWithoutGuessing(nonogramKey: NonogramKey, workingGrid: NonogramGrid): NonogramGrid | undefined{
     let lastGridHash = '';
     while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ) {
-        solveByEachDimension(workingGrid, nonogramKey);
+        let result = solveByEachDimension(workingGrid, nonogramKey);
+        if(result === undefined) return undefined;
+        workingGrid = result;
     }
     return workingGrid;
 }
 
-function solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey){
-    furtherSolveByDimension(workingGrid, 0, key.firstDimensionNumbers);
-    furtherSolveByDimension(workingGrid, 1, key.secondDimensionNumbers);
+function solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey): NonogramGrid | undefined{
+    let result = furtherSolveByDimension(workingGrid, 0, key.firstDimensionNumbers);
+    if(result === undefined) return undefined;
+    result = furtherSolveByDimension(result, 1, key.secondDimensionNumbers);
+    if(result === undefined) return undefined;
+    return result;
 }
 
-function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]){
-    for (let indexInDimension = 0; indexInDimension < workingGrid.getDimensionSize(dimension); indexInDimension++) {
+function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]): NonogramGrid | undefined {
+    const resultGrid = workingGrid.clone();
+    for (let indexInDimension = 0; indexInDimension < resultGrid.getDimensionSize(dimension); indexInDimension++) {
         const furtherSolvedSlice = attemptToFurtherSolveSlice(
-            workingGrid.getSliceAcrossArray(dimension, indexInDimension),
+            resultGrid.getSliceAcrossArray(dimension, indexInDimension),
             numbersOnDimension[indexInDimension]);
-        workingGrid.applySliceAcrossArray(dimension, indexInDimension, furtherSolvedSlice);
+        if(furtherSolvedSlice === undefined){
+            return undefined;
+        }
+        resultGrid.applySliceAcrossArray(dimension, indexInDimension, furtherSolvedSlice);
     }
+    return resultGrid;
 }
 
 
@@ -45,11 +58,12 @@ export function checkSliceValidity(slice: NonogramCell[], numbersOnSlice: number
 }
 
 /**
- * 
+ * Function which will take a given slice and solve it further based on the number keys
+ *  returns undefined if it is impossible to fit the numbers into the given slice
  * @param slice a full row or column
  * @param sliceNumbers the list of numbers for this slice
  */
-export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: number[]): NonogramCell[] {
+export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: number[]): NonogramCell[] | undefined {
     if(!slice.some(cell => cell !== NonogramCell.UNKNOWN)){
         return solveEmptySlice(slice.length, sliceNumbers);
     }
@@ -59,7 +73,7 @@ export function attemptToFurtherSolveSlice(slice: NonogramCell[], sliceNumbers: 
 
     const possiblePermutations = Array.from(generateAllPossibleSlicePermutations(slice, sliceNumbers));
     if(possiblePermutations.length <= 0){
-        return slice;
+        return undefined;
     }
     const reducedResult = reduceMultiplePermutations(possiblePermutations);
     return reducedResult;
@@ -85,6 +99,11 @@ export function reduceMultiplePermutations(slicePermutations: NonogramCell[][]):
     });
 }
 
+/**
+ * Utility function to shortcut to a best-guess solution of a completely empty row
+ * @param sliceLength length of the empty slice
+ * @param sliceNumbers The number key for the slice
+ */
 function solveEmptySlice(sliceLength: number, sliceNumbers: number[]): NonogramCell[] {
     const totalActiveSquares = sliceNumbers.reduce((sum, current) => sum + current, 0);
     if(totalActiveSquares === 0){

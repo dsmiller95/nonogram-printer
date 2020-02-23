@@ -2,12 +2,18 @@ import { NonogramCell } from './nonogram-parameter';
 import * as md5 from 'md5';
 
 export class NonogramGrid {
-
     gridData: NonogramCell[][];
 
     constructor(firstDimensionSize: number, secondDimensionSize: number){
         this.gridData = Array(firstDimensionSize).fill(undefined)
             .map(() => Array(secondDimensionSize).fill(NonogramCell.UNKNOWN));
+    }
+
+    public clone(): NonogramGrid {
+        const newGrid = new NonogramGrid(this.getDimensionSize(0), this.getDimensionSize(1));
+        newGrid.gridData = this.gridData.map(first =>
+            first.map(cell => cell));
+        return newGrid;
     }
 
     public getDimensionSize(dimension: number){

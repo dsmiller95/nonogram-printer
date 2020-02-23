@@ -79,5 +79,16 @@ OOX
             expect(grid.getGridHash()).toEqual(lastHash);
         });
     });
+    describe('when cloning a grid', () => {
+        it('should use a different data source', () => {
+            const source = new NonogramGrid(3, 4);
+            source.applySliceAcrossArray(0, 0, rowFromString('XOX'));
+            const result = source.clone();
+            expect(result.getSliceAcrossArray(0, 0)).toEqual(rowFromString('XOX'));
+            result.applySliceAcrossArray(0, 0, rowFromString('-X-'));
+            expect(result.getSliceAcrossArray(0, 0)).toEqual(rowFromString('-X-'));
+            expect(source.getSliceAcrossArray(0, 0)).toEqual(rowFromString('XOX'));
+        });
+    });
 });
 

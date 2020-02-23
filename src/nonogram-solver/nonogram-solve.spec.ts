@@ -32,7 +32,7 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [],
                 secondDimensionNumbers: []
             });
-            expect(result.gridData.length).toBe(0);
+            expect(result.solutions[0].solution.gridData.length).toBe(0);
         });
 
         it('solves a single unset cell', () => {
@@ -40,9 +40,9 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[]],
                 secondDimensionNumbers: [[]]
             });
-            expect(result.gridData.length).toBe(1);
-            expect(result.gridData[0].length).toBe(1);
-            expect(result.gridData[0][0]).toBe(NonogramCell.UNSET);
+            expect(result.solutions[0].solution.gridData.length).toBe(1);
+            expect(result.solutions[0].solution.gridData[0].length).toBe(1);
+            expect(result.solutions[0].solution.gridData[0][0]).toBe(NonogramCell.UNSET);
         });
 
         it('solves a single set cell', () => {
@@ -50,9 +50,9 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[1]],
                 secondDimensionNumbers: [[1]]
             });
-            expect(result.gridData.length).toBe(1);
-            expect(result.gridData[0].length).toBe(1);
-            expect(result.gridData[0][0]).toBe(NonogramCell.SET);
+            expect(result.solutions[0].solution.gridData.length).toBe(1);
+            expect(result.solutions[0].solution.gridData[0].length).toBe(1);
+            expect(result.solutions[0].solution.gridData[0][0]).toBe(NonogramCell.SET);
         });
 
         it('solves a trivial nonogram which only requires on dimension of numbers', () => {
@@ -60,9 +60,9 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[3], [1, 1], [3]],
                 secondDimensionNumbers: [[3], [1, 1], [3]]
             });
-            expect(result.gridData.length).toBe(3);
-            expect(result.gridData[0].length).toBe(3);
-            expect(result.gridData).toEqual([
+            expect(result.solutions[0].solution.gridData.length).toBe(3);
+            expect(result.solutions[0].solution.gridData[0].length).toBe(3);
+            expect(result.solutions[0].solution.gridData).toEqual([
                 [1, 1, 1],
                 [1, 0, 1],
                 [1, 1, 1],
@@ -74,9 +74,9 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[1], [1], [3]],
                 secondDimensionNumbers: [[3], [1], [1]]
             });
-            expect(result.gridData.length).toBe(3);
-            expect(result.gridData[0].length).toBe(3);
-            expect(result.gridData).toEqual(gridFromString(`
+            expect(result.solutions[0].solution.gridData.length).toBe(3);
+            expect(result.solutions[0].solution.gridData[0].length).toBe(3);
+            expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
                         XOO
                         XOO
                         XXX
@@ -88,11 +88,44 @@ describe('nonogram solver', () => {
                 firstDimensionNumbers: [[3], [], [1, 1], [1]],
                 secondDimensionNumbers: [[1, 1], [1], [1, 2], []]
             });
-            expect(result.gridData).toEqual(gridFromString(`
+            expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
                         XXXO
                         OOOO
                         XOXO
                         OOXO
+            `));
+        });
+
+        it('solves a nonogram which requires guessing', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [[1, 1], [1], [1, 1], [1, 1]],
+                secondDimensionNumbers: [[2], [2], [2], [1]]
+            });
+            expect(result.solutions.length).toEqual(1);
+            expect(result.solutions[0].numberOfGuesses).toEqual(1);
+            expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
+                        OXOX
+                        OXOO
+                        XOXO
+                        XOXO
+            `));
+        });
+
+        it('returns multiple results when a nonogram has multiple solutions', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [[1], [1]],
+                secondDimensionNumbers: [[1], [1]]
+            });
+            expect(result.solutions.length).toEqual(2);
+            expect(result.solutions[0].numberOfGuesses).toEqual(1);
+            expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
+                        XO
+                        OX
+            `));
+            expect(result.solutions[1].numberOfGuesses).toEqual(1);
+            expect(result.solutions[1].solution.gridData).toEqual(gridFromString(`
+                        OX
+                        XO
             `));
         });
     });
@@ -409,6 +442,12 @@ describe('nonogram solver', () => {
                 rowFromString('----O-----------'),
                 [3, 5, 1]);
             expect(result).toEqual(rowFromString('----O----X------'));
+        });
+        it('should return undefined if the row is absolutely unsolvable', () => {
+            const result = attemptToFurtherSolveSlice(
+                rowFromString('XX--'),
+                [1]);
+            expect(result).toBeUndefined();;
         });
     });
 });
