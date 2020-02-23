@@ -111,9 +111,7 @@ export function* generateAllPossibleSlicePermutations(
 {
     const resultGen = slicePermutationGenerator(currentSlice, sliceNumbers);
     for(let result = resultGen.next(); !result.done; result = resultGen.next()){
-        if(isSliceCompatibleWithBase(currentSlice, result.value)) {
-            yield result.value;
-        }
+        yield result.value;
     }
     return;
 }
@@ -122,7 +120,7 @@ function isSliceCompatibleWithBase(
     baseSlice: NonogramCell[],
     newSlice: NonogramCell[],
     baseSliceStart: number = 0,
-    baseSliceEnd: number = baseSlice.length): boolean
+    baseSliceEnd: number = baseSliceStart + newSlice.length): boolean
 {
     if(newSlice.length !== baseSliceEnd - baseSliceStart){
         throw "ERROR: cannot compare a new slice to a base slice sector of different size"
@@ -147,28 +145,34 @@ export function* slicePermutationGenerator(
     if(minimumSpanningSpace > currentSpaceLength) {
         return;
     }
-    for(let i = 0; i <= currentSpaceLength - minimumSpanningSpace; i++){
-        if(i + sliceStartIndex + sliceNumbers[0] === sliceEnd){
+    for(let indexInWiggleRoom = 0; indexInWiggleRoom <= currentSpaceLength - minimumSpanningSpace; indexInWiggleRoom++){
+        if(indexInWiggleRoom + sliceStartIndex + sliceNumbers[0] === sliceEnd){
             //there's exactly enough space to fit just this one number at the end
-            let result = new Array(i + sliceNumbers[0])
+            let result = new Array(indexInWiggleRoom + sliceNumbers[0])
                 .fill(NonogramCell.UNSET)
-                .fill(NonogramCell.SET, i, i + sliceNumbers[0]);
-            yield result;
+                .fill(NonogramCell.SET, indexInWiggleRoom, indexInWiggleRoom + sliceNumbers[0]);
+            if(isSliceCompatibleWithBase(currentSlice, result,
+                sliceStartIndex)){
+                yield result;
+            }
             continue;
         }
-        const subSlicesStartIndex = i + sliceNumbers[0] + 1 + sliceStartIndex;
+        let prefix: NonogramCell[] = new Array(indexInWiggleRoom + sliceNumbers[0] + 1).fill(NonogramCell.UNSET);
+        prefix = prefix.fill(NonogramCell.SET, indexInWiggleRoom, indexInWiggleRoom + sliceNumbers[0]);
+        if(!isSliceCompatibleWithBase(currentSlice, prefix,
+            sliceStartIndex)){
+            continue;
+        }
+
+        const subSlicesStartIndex = indexInWiggleRoom + sliceNumbers[0] + 1 + sliceStartIndex;
         let subSlices = Array.from(slicePermutationGenerator(
             currentSlice,
             sliceNumbers.slice(1, sliceNumbers.length),
             subSlicesStartIndex))
-            .filter(slice => isSliceCompatibleWithBase(currentSlice, slice, subSlicesStartIndex, sliceEnd));
         
         if(subSlices.length === 0){
             continue;
         }
-
-        let prefix: NonogramCell[] = new Array(i + sliceNumbers[0] + 1).fill(NonogramCell.UNSET);
-        prefix = prefix.fill(NonogramCell.SET, i, i + sliceNumbers[0]);
         for (const currentSubSlice of subSlices) {
             yield [...prefix, ...currentSubSlice];
         }

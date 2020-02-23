@@ -140,7 +140,7 @@ describe('nonogram solver', () => {
         });
     });
 
-    fdescribe('when checking the validity of a row based on numbers', () => {
+    describe('when checking the validity of a row based on numbers', () => {
         it('should return true when small numbers in unknown row', () => {
             const result = checkSliceValidity(rowFromString('----'), [1, 1]);
             expect(result).toBe(true);
@@ -171,6 +171,14 @@ describe('nonogram solver', () => {
         });
         it('should return false when row fully incorrectly solved with two smaller number', () => {
             const result = checkSliceValidity(rowFromString('XXOO'), [1, 1]);
+            expect(result).toBe(false);
+        });
+        it('should return true when long row only solved at end', () => {
+            const result = checkSliceValidity(rowFromString('----OXOX'), [1, 1]);
+            expect(result).toBe(true);
+        });
+        it('should return false when extra set cells at the end', () => {
+            const result = checkSliceValidity(rowFromString('X-X-OXX'), [1, 1]);
             expect(result).toBe(false);
         });
     });
@@ -247,7 +255,7 @@ describe('nonogram solver', () => {
         });
     });
 
-    describe('when generating all possible row permutations', () => {
+    fdescribe('when generating all possible row permutations', () => {
         it('should generate one permutation for a completely full row', () => {
             const iterResult = generateAllPossibleSlicePermutations(
                 rowFromString('------'),
@@ -284,12 +292,12 @@ describe('nonogram solver', () => {
             const arrayResult = Array.from(iterResult);
             expect(arrayResult.length).toBe(4);
             expect(arrayResult).toEqual(gridFromString(
-    `
-    XOOO
-    OXOO
-    OOXO
-    OOOX
-    `));
+                `
+                XOOO
+                OXOO
+                OOXO
+                OOOX
+                `));
         });
         it('should generate many permutations for a mostly empty row', () => {
             const iterResult = generateAllPossibleSlicePermutations(
@@ -299,18 +307,18 @@ describe('nonogram solver', () => {
             const arrayResult = Array.from(iterResult);
             expect(arrayResult.length).toBe(10);
             expect(arrayResult).toEqual(gridFromString(
-    `
-    XXOXOXXXOO
-    XXOXOOXXXO
-    XXOXOOOXXX
-    XXOOXOXXXO
-    XXOOXOOXXX
-    XXOOOXOXXX
-    OXXOXOXXXO
-    OXXOXOOXXX
-    OXXOOXOXXX
-    OOXXOXOXXX
-    `));
+                `
+                XXOXOXXXOO
+                XXOXOOXXXO
+                XXOXOOOXXX
+                XXOOXOXXXO
+                XXOOXOOXXX
+                XXOOOXOXXX
+                OXXOXOXXXO
+                OXXOXOOXXX
+                OXXOOXOXXX
+                OOXXOXOXXX
+                `));
         });
         it('should generate permutations based on what is already in the row', () => {
             const iterResult = generateAllPossibleSlicePermutations(
@@ -320,14 +328,14 @@ describe('nonogram solver', () => {
             const arrayResult = Array.from(iterResult);
             expect(arrayResult.length).toBe(6);
             expect(arrayResult).toEqual(gridFromString(
-    `
-    XXOXOXXXOO
-    XXOXOOXXXO
-    XXOXOOOXXX
-    XXOOXOXXXO
-    XXOOXOOXXX
-    XXOOOXOXXX
-    `));
+                `
+                XXOXOXXXOO
+                XXOXOOXXXO
+                XXOXOOOXXX
+                XXOOXOXXXO
+                XXOOXOOXXX
+                XXOOOXOXXX
+                `));
         });
         it('should generate permutations based on what is already in the row without using the utility entry function', () => {
             const iterResult = slicePermutationGenerator(
@@ -337,9 +345,17 @@ describe('nonogram solver', () => {
             const arrayResult = Array.from(iterResult);
             expect(arrayResult.length).toBe(1);
             expect(arrayResult).toEqual(gridFromString(
-    `
-    XXOXOXXXOO
-    `));
+                `
+                XXOXOXXXOO
+                `));
+        });
+        it('should generate no permutations if the rows state is incompatible with the numbers', () => {
+            const iterResult = generateAllPossibleSlicePermutations(
+                rowFromString('XXX---------'),
+                [2, 1, 3]
+            );
+            const arrayResult = Array.from(iterResult);
+            expect(arrayResult.length).toBe(0);
         });
     });
 
