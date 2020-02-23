@@ -255,7 +255,7 @@ describe('nonogram solver', () => {
         });
     });
 
-    fdescribe('when generating all possible row permutations', () => {
+    describe('when generating all possible row permutations', () => {
         it('should generate one permutation for a completely full row', () => {
             const iterResult = generateAllPossibleSlicePermutations(
                 rowFromString('------'),
@@ -353,6 +353,14 @@ describe('nonogram solver', () => {
             const iterResult = generateAllPossibleSlicePermutations(
                 rowFromString('XXX---------'),
                 [2, 1, 3]
+            );
+            const arrayResult = Array.from(iterResult);
+            expect(arrayResult.length).toBe(0);
+        });
+        it('should generate no permutations if there are too many Set cells', () => {
+            const iterResult = generateAllPossibleSlicePermutations(
+                rowFromString('X-X-OXX'),
+                [1, 1]
             );
             const arrayResult = Array.from(iterResult);
             expect(arrayResult.length).toBe(0);

@@ -138,7 +138,11 @@ export function* slicePermutationGenerator(
 
     const currentSpaceLength = sliceEnd - sliceStartIndex;
     if(sliceNumbers.length === 0){
-        yield new Array(currentSpaceLength).fill(NonogramCell.UNSET);
+        const result = new Array(currentSpaceLength).fill(NonogramCell.UNSET);
+        if(isSliceCompatibleWithBase(currentSlice, result,
+            sliceStartIndex)){
+            yield result;
+        }
         return;
     }
     const minimumSpanningSpace = getMinimumSpaceForNumbers(sliceNumbers);
@@ -148,7 +152,7 @@ export function* slicePermutationGenerator(
     for(let indexInWiggleRoom = 0; indexInWiggleRoom <= currentSpaceLength - minimumSpanningSpace; indexInWiggleRoom++){
         if(indexInWiggleRoom + sliceStartIndex + sliceNumbers[0] === sliceEnd){
             //there's exactly enough space to fit just this one number at the end
-            let result = new Array(indexInWiggleRoom + sliceNumbers[0])
+            const result = new Array(indexInWiggleRoom + sliceNumbers[0])
                 .fill(NonogramCell.UNSET)
                 .fill(NonogramCell.SET, indexInWiggleRoom, indexInWiggleRoom + sliceNumbers[0]);
             if(isSliceCompatibleWithBase(currentSlice, result,
