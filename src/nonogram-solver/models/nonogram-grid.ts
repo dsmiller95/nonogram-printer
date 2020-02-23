@@ -9,6 +9,18 @@ export class NonogramGrid {
             .map(() => Array(secondDimensionSize).fill(NonogramCell.UNKNOWN));
     }
 
+    public get isSolved(): boolean{
+        return !this.gridData.some(slice => slice.some(cell => cell === NonogramCell.UNKNOWN));
+    }
+
+    public setCell(firstDimensionIndex: number, secondDimensionIndex: number, value: NonogramCell){
+        this.gridData[firstDimensionIndex][secondDimensionIndex] = value;
+    }
+
+    public getCell(firstDimensionIndex: number, secondDimensionIndex: number): NonogramCell{
+        return this.gridData[firstDimensionIndex][secondDimensionIndex];
+    }
+
     public clone(): NonogramGrid {
         const newGrid = new NonogramGrid(this.getDimensionSize(0), this.getDimensionSize(1));
         newGrid.gridData = this.gridData.map(first =>

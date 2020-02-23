@@ -1,16 +1,54 @@
-import { NonogramKey, SolvedNonogram, NonogramCell } from './models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution } from './models/nonogram-parameter';
 import { NonogramGrid } from './models/nonogram-grid';
 
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid) as NonogramGrid;
+    const firstSolve = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
+    if(firstSolve === undefined){
+        return {solutions: []};
+    }
 
-    return {solutions: [{
-        solution: result,
-        numberOfGuesses: 0
-    }]};
+    const results = solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
+
+    return {solutions: results};
 }
+
+function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number): NonogramSolution[] {
+    if(inputGrid.isSolved){
+        return [{
+            numberOfGuesses: previousGuesses,
+            solution: inputGrid
+        }];
+    }
+    let allSolutions: NonogramSolution[] = [];
+    for(let first = 0; first < inputGrid.getDimensionSize(0); first++){
+        for(let second = 0; second < inputGrid.getDimensionSize(1); second++){
+            if(inputGrid.getCell(first, second) === NonogramCell.UNKNOWN){
+                let newGrid = inputGrid.clone();
+                newGrid.setCell(first, second, NonogramCell.SET);
+                let solvedAttempt = furtherSolveNonogramWithoutGuessing(nonogramKey, newGrid);
+                if(solvedAttempt !== undefined){
+                    allSolutions = allSolutions.concat(solveNonogramWithGuesses(nonogramKey, solvedAttempt, previousGuesses + 1));
+                }
+
+                newGrid = inputGrid.clone();
+                newGrid.setCell(first, second, NonogramCell.UNSET);
+                solvedAttempt = furtherSolveNonogramWithoutGuessing(nonogramKey, newGrid);
+                if(solvedAttempt !== undefined){
+                    allSolutions = allSolutions.concat(solveNonogramWithGuesses(nonogramKey, solvedAttempt, previousGuesses + 1));
+                }
+
+                if(allSolutions.length <= 0){
+                    throw `ERROR: invalid nonogram. no solution for cell ${first}, ${second}`
+                }
+                return allSolutions;
+            }
+        }
+    }
+    return allSolutions;
+}
+
 
 /**
  * If the passed in grid does not create a rule contradiction, returns a further solved grid
