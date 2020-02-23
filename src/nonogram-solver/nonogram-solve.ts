@@ -39,24 +39,9 @@ function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, n
 
 
 export function checkSliceValidity(slice: NonogramCell[], numbersOnSlice: number[]): boolean {
-    //const workingNewSlice: NonogramCell[] = new Array(slice.length).fill(NonogramCell.UNKNOWN);
-    let indexInSlice = 0;
-    numberLoop: for (const number of numbersOnSlice) {
-        let firstValidPlacementSpot = (slice[indexInSlice] === NonogramCell.UNSET) ? -1 : indexInSlice
-        // let placementLengthCounter = 0;
-        while(indexInSlice < slice.length){
-            if(slice[indexInSlice] === NonogramCell.UNSET){
-                firstValidPlacementSpot = -1;
-            }
-            if(firstValidPlacementSpot >= 0 &&
-                indexInSlice - firstValidPlacementSpot === number) {
-                continue numberLoop;
-            }
-            indexInSlice++;
-        }
-        return false;
-    }
-    return true;
+    const possiblePermutations = generateAllPossibleSlicePermutations(slice, numbersOnSlice);
+    let firstPermutation = possiblePermutations.next();
+    return !firstPermutation.done;
 }
 
 /**
@@ -122,7 +107,7 @@ function solveEmptySlice(sliceLength: number, sliceNumbers: number[]): NonogramC
 
 export function* generateAllPossibleSlicePermutations(
     currentSlice: NonogramCell[],
-    sliceNumbers: number[])
+    sliceNumbers: number[]): Generator<NonogramCell[], undefined, never>
 {
     const resultGen = slicePermutationGenerator(currentSlice, sliceNumbers);
     for(let result = resultGen.next(); !result.done; result = resultGen.next()){
@@ -151,7 +136,7 @@ export function* slicePermutationGenerator(
     currentSlice: NonogramCell[],
     sliceNumbers: number[],
     sliceStartIndex: number = 0,
-    sliceEnd: number = currentSlice.length) : Generator<NonogramCell[], undefined, never> {
+    sliceEnd: number = currentSlice.length): Generator<NonogramCell[], undefined, never> {
 
     const currentSpaceLength = sliceEnd - sliceStartIndex;
     if(sliceNumbers.length === 0){
