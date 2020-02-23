@@ -39,7 +39,8 @@ class Grid extends React.Component<IProps, IState> {
 
         if(!this.state.grid ||
             this.state.grid.length != this.props.width ||
-            this.state.grid[0].length != this.props.height) {
+            this.state.grid[0].length != this.props.height)
+        {
             this.setState({grid: this.generateGrid(this.props.width, this.props.height)});
             console.log(this.state.grid.length);
             console.log(this.state.grid[0].length);

@@ -2,6 +2,7 @@ import * as React from 'react';
 import './Guide.css';
 import { Pixel } from '../Pixel';
 import qrCode from '../assets/self-link-qr.png';
+import { generateGuidesWithPadding } from './guide-number-generator';
 
 export interface IProps {
     grid: Pixel[][];
@@ -23,71 +24,22 @@ class Guide extends React.Component<IProps, IState> {
     }
 
     private generateGuides(grid: Pixel[][]): IState {
-        let width: number, height: number;
         if(!grid ||
-            (width = grid.length) == 0 ||
-            (height = grid[0].length) == 0){
+            grid.length === 0 ||
+            grid[0].length === 0){
             return {
                 rows: [],
                 cols: []
             };
         }
-        let cols: GuideData[][] = [];
-        for(let i = 0; i < width; i++){
-            let col: number[] = [];
-            let runLength = 0;
-            for (let j = 0; j < height; j++) {
-                let pixel = grid[i][j];
-                if(pixel.isBlack) {
-                    runLength++;
-                }
-                if(runLength > 0 && !pixel.isBlack) {
-                    col.push(runLength);
-                    runLength = 0;
-                }
-            }
-            if(runLength > 0){
-                col.push(runLength);
-            }
-            while(col.length < Math.ceil(height/2)){
-                col.unshift(NaN);
-            }
-            cols.push(col);
-        }
-        
-        
-        let rows: GuideData[][] = [];
-        for(let i = 0; i < height; i++){
-            let row: number[] = [];
-            let runLength = 0;
-            for (let j = 0; j < width; j++) {
-                let pixel = grid[j][i];
-                if(pixel.isBlack) {
-                    runLength++;
-                }
-                if(runLength > 0 && !pixel.isBlack) {
-                    row.push(runLength);
-                    runLength = 0;
-                }
-            }
-            if(runLength > 0){
-                row.push(runLength);
-            }
-            while(row.length < Math.ceil(width/2)){
-                row.unshift(NaN);
-            }
-            rows.push(row);
-        }
+        const guide = generateGuidesWithPadding(grid.map(x => x.map(cell => cell.isBlack))) as {rows: GuideData[][], cols: GuideData[][]};
 
-        if(Number.isNaN(rows[0][0] as number)) {
-            rows[0][0] = 'QRCode';
-        } else if(Number.isNaN(cols[0][0] as number)) {
-            cols[0][0] = 'QRCode';
+        if(Number.isNaN(guide.rows[0][0] as number)) {
+            guide.rows[0][0] = 'QRCode';
+        } else if(Number.isNaN(guide.cols[0][0] as number)) {
+            guide.cols[0][0] = 'QRCode';
         }
-        return {
-            rows,
-            cols
-        };
+        return guide;
     }
 
     private printStuff(){

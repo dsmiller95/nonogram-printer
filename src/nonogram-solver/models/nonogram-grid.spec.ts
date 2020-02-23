@@ -1,6 +1,6 @@
 import { NonogramGrid } from './nonogram-grid';
 import { NonogramCell } from './nonogram-parameter';
-import { rowFromString, gridFromString } from '../nonogram-solve.spec';
+import { rowFromString, gridFromString } from '../test-utilities';
 describe('nonogram grid data model', () => {
     describe('when creating a new grid', () => {
         it('should start with unknown values', () => {
