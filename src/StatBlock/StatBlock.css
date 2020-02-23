@@ -1,3 +1,17 @@
-.StatBlock .row {
-  display: inline-grid;
+.StatBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.data-block {
+  width: fit-content;
+  padding: 3px;
+  border: 1px solid black;
+}
+.data-block .data-label{
+  display: inline-block;
+}
+.data-block .data-value{
+  display: inline-block;
 }
