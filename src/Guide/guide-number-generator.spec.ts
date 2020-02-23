@@ -1,8 +1,8 @@
-import { NonogramCell } from '../nonogram-solver/models/nonogram-parameter';
+import { NonogramCell } from '../models/nonogram-parameter';
 import { gridFromString } from '../nonogram-solver/test-utilities';
-import { generateGuidesWithPadding, generateKey } from './guide-number-generator';
+import { generateKey, addPaddingToGuides, nonogramKeyToGuideNumbers } from './guide-number-generator';
 
-fdescribe('when generating guides based off of a grid', () => {
+describe('when generating guides based off of a grid', () => {
     it('should generate guides from a given grid with the right amount of padding', () => {
         const grid = gridFromString(`
             XOXXXOXX
@@ -12,7 +12,8 @@ fdescribe('when generating guides based off of a grid', () => {
             XXXXXXXX
             OOOOOOOO
         `).map(row => row.map(cell => cell === NonogramCell.SET));
-        const guide = generateGuidesWithPadding(grid);
+        let guide = nonogramKeyToGuideNumbers(generateKey(grid));
+        guide = addPaddingToGuides(guide);
         expect(guide.rows).toEqual([
             [NaN,   3, 1],
             [NaN,   1, 1],
@@ -39,7 +40,7 @@ fdescribe('when generating guides based off of a grid', () => {
             XXXXXXXX
             OOOOOOOO
         `).map(row => row.map(cell => cell === NonogramCell.SET));
-        const guide = generateKey(grid);
+        let guide = nonogramKeyToGuideNumbers(generateKey(grid));
         expect(guide.rows).toEqual([
             [3, 1],
             [1, 1],

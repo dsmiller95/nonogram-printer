@@ -1,11 +1,11 @@
 import * as React from 'react';
 import './Guide.css';
-import { Pixel } from '../Pixel';
 import qrCode from '../assets/self-link-qr.png';
-import { generateGuidesWithPadding } from './guide-number-generator';
+import { GuideNumbers, addPaddingToGuides, nonogramKeyToGuideNumbers } from './guide-number-generator';
+import { NonogramKey } from 'src/models/nonogram-parameter';
 
 export interface IProps {
-    grid: Pixel[][];
+    nonogramKey: NonogramKey
 }
 
 type QRCode = 'QRCode';
@@ -20,42 +20,28 @@ class Guide extends React.Component<IProps, IState> {
 
     constructor(props: IProps){
         super(props);
-        this.state = this.generateGuides(props.grid);
+        this.state = this.padAndDecorateKey(props.nonogramKey);
     }
 
-    private generateGuides(grid: Pixel[][]): IState {
-        if(!grid ||
-            grid.length === 0 ||
-            grid[0].length === 0){
-            return {
-                rows: [],
-                cols: []
-            };
-        }
-        const guide = generateGuidesWithPadding(grid.map(x => x.map(cell => cell.isBlack))) as {rows: GuideData[][], cols: GuideData[][]};
+    private padAndDecorateKey(key: NonogramKey): IState {
+        const transformedGuide: GuideNumbers = nonogramKeyToGuideNumbers(key);
+        const resultGuide = addPaddingToGuides(transformedGuide) as {rows: GuideData[][], cols: GuideData[][]};
+        
 
-        if(Number.isNaN(guide.rows[0][0] as number)) {
-            guide.rows[0][0] = 'QRCode';
-        } else if(Number.isNaN(guide.cols[0][0] as number)) {
-            guide.cols[0][0] = 'QRCode';
+        if(resultGuide.rows.length > 0 && Number.isNaN(resultGuide.rows[0][0] as number)) {
+            resultGuide.rows[0][0] = 'QRCode';
+        } else if(resultGuide.rows.length > 0 && Number.isNaN(resultGuide.cols[0][0] as number)) {
+            resultGuide.cols[0][0] = 'QRCode';
         }
-        return guide;
+        return resultGuide;
     }
 
     private printStuff(){
         window.print();
-        /*let w = window.open();
-        if(w == null){
-            alert("couldn't print");
-            return;
-        }
-        w.document.write(document.getElementsByClassName('Guide')[0].innerHTML);
-        w.print();
-        w.close();*/
     }
 
     public render() {
-        let tmpState = this.generateGuides(this.props.grid);
+        let tmpState = this.padAndDecorateKey(this.props.nonogramKey);
 
         return (
             <div>

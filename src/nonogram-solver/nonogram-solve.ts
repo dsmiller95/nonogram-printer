@@ -1,5 +1,5 @@
-import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution } from './models/nonogram-parameter';
-import { NonogramGrid } from './models/nonogram-grid';
+import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution } from '../models/nonogram-parameter';
+import { NonogramGrid } from '../models/nonogram-grid';
 
 export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);

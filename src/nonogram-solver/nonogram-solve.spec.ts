@@ -1,6 +1,6 @@
 import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing, checkSliceValidity } from './nonogram-solve';
-import { NonogramCell } from './models/nonogram-parameter';
-import { NonogramGrid } from './models/nonogram-grid';
+import { NonogramCell } from '../models/nonogram-parameter';
+import { NonogramGrid } from '../models/nonogram-grid';
 import { gridFromString, rowFromString } from './test-utilities';
 
 describe('nonogram solver', () => {

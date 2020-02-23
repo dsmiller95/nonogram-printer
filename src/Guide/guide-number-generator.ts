@@ -1,23 +1,31 @@
+import { NonogramKey } from 'src/models/nonogram-parameter';
 export interface GuideNumbers{
     rows: number[][],
     cols: number[][]
 }
 
-export function generateKey(grid: boolean[][]): GuideNumbers {
-    const columns: number[][] = [];
-    for(let columnIndex = 0; columnIndex < grid.length; columnIndex++){
-        columns.push(generateKeyForSlice(grid[columnIndex]));
+export function generateKey(grid: boolean[][]): NonogramKey {
+    const firstDimension: number[][] = [];
+    for(let firstDimensionIndex = 0; firstDimensionIndex < grid.length; firstDimensionIndex++){
+        firstDimension.push(generateKeyForSlice(grid[firstDimensionIndex]));
     }
     
-    const rows: number[][] = [];
-    for(let row = 0; row < grid[0].length; row++){
-        rows.push(generateKeyForSlice(grid.map(column => column[row])));
+    const secondDimension: number[][] = [];
+    for(let secondDimensionIndex = 0; secondDimensionIndex < grid[0].length; secondDimensionIndex++){
+        secondDimension.push(generateKeyForSlice(grid.map(column => column[secondDimensionIndex])));
     }
 
     return {
-        rows,
-        cols: columns
+        firstDimensionNumbers: firstDimension,
+        secondDimensionNumbers: secondDimension
     };
+}
+
+export function nonogramKeyToGuideNumbers(key: NonogramKey): GuideNumbers {
+    return {
+        rows: key.secondDimensionNumbers,
+        cols: key.firstDimensionNumbers
+    }
 }
 
 function generateKeyForSlice(slice: boolean[]): number[] {
@@ -39,14 +47,13 @@ function generateKeyForSlice(slice: boolean[]): number[] {
     return key;
 }
 
-export function generateGuidesWithPadding(grid: boolean[][]): GuideNumbers {
-    let width: number = grid.length;
-    let height: number = grid[0].length;
-    const keys = generateKey(grid);
+export function addPaddingToGuides(guide: GuideNumbers){
+    let width: number = guide.cols.length;
+    let height: number = guide.rows.length;
 
     const targetRowLength = Math.ceil(width/2);
-    keys.rows.forEach(row => row.unshift(...Array(targetRowLength - row.length).fill(NaN)));
+    guide.rows.forEach(row => row.unshift(...Array(targetRowLength - row.length).fill(NaN)));
     const targetColumnLength = Math.ceil(height/2);
-    keys.cols.forEach(column => column.unshift(...Array(targetColumnLength - column.length).fill(NaN)));
-    return keys;
+    guide.cols.forEach(column => column.unshift(...Array(targetColumnLength - column.length).fill(NaN)));
+    return guide;
 }
