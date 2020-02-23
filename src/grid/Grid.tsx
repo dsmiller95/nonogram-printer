@@ -54,10 +54,12 @@ class Grid extends React.Component<IProps, IState> {
 
         return (
             <div className="Grid">
-                {this.state.grid.map(row => 
-                    <div className="row">
-                        {row.map(item => 
-                            <div className={"col" + (item.isBlack ? " black" : "") + (item.isYellow ? " yellow" : "")}
+                {this.state.grid.map((row, index) => 
+                    <div key={index} className="row">
+                        {row.map((item, index) => 
+                            <div
+                                key={index}
+                                className={"col" + (item.isBlack ? " black" : "") + (item.isYellow ? " yellow" : "")}
                                 onMouseEnter={() => {
                                     if(this.isDragging){
                                         updatePixel(item);

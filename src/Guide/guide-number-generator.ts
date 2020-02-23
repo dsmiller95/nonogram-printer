@@ -23,8 +23,8 @@ export function generateKey(grid: boolean[][]): NonogramKey {
 
 export function nonogramKeyToGuideNumbers(key: NonogramKey): GuideNumbers {
     return {
-        rows: key.secondDimensionNumbers,
-        cols: key.firstDimensionNumbers
+        rows: key.secondDimensionNumbers.map(x => x.map(y => y)),
+        cols: key.firstDimensionNumbers.map(x => x.map(y => y))
     }
 }
 

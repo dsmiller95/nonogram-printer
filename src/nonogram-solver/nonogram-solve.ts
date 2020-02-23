@@ -9,9 +9,13 @@ export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
         return {solutions: []};
     }
 
-    const results = solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
 
-    return {solutions: results};
+    try {
+        const results = solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
+        return {solutions: results};
+    } catch {
+        return {solutions: []};
+    }
 }
 
 function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number): NonogramSolution[] {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './Grid.css';
+import './StatBlock.css';
 import { NonogramSolution } from '../models/nonogram-parameter';
 
 export interface IProps {
@@ -19,8 +19,8 @@ class StatBlock extends React.Component<IProps, IState> {
 
         return (
             <div className="StatBlock">
-                {this.props.solutions.map(solution => 
-                    <div className="row">
+                {this.props.solutions.map((solution, index) => 
+                    <div key={index} className="row">
                         <span>{solution.numberOfGuesses}</span>
                     </div>
                 )}

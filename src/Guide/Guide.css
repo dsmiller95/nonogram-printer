@@ -1,3 +1,7 @@
+.Guide {
+  display: none;
+}
+
 .Guide .col {
   border: 1px solid black;
   display: inline-block;
@@ -26,6 +30,9 @@
 }
 
 @media print {
+  .Guide {
+    display: block;
+  } 
   .Grid {
     display: none;
   }

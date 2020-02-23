@@ -51,8 +51,8 @@ class Guide extends React.Component<IProps, IState> {
                 <div className="Guide">
                         
                     <span className="rows">
-                        {tmpState.rows.reverse().map(row => 
-                            <div className="row">
+                        {tmpState.rows.reverse().map((row, index) => 
+                            <div key={index} className="row">
                                 {row.map(item => 
                                     <div className="col">
                                         { item == 'QRCode' ?
@@ -67,8 +67,8 @@ class Guide extends React.Component<IProps, IState> {
                     </span>
                     <span className="divider"></span>
                     <span className="cols">
-                        {tmpState.cols.map(col => 
-                            <div className="row">
+                        {tmpState.cols.map((col, index) => 
+                            <div key={index} className="row">
                                 {col.map(item => 
                                     <div className="col">
                                         { item == 'QRCode' ?
