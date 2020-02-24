@@ -106,6 +106,64 @@ describe('nonogram solver', () => {
                         XO
             `));
         });
+
+        fit('solves a big nonogram with multiple solutions and guessing', () => {
+            const result = solveNonogram({
+                firstDimensionNumbers: [
+                    [6], 
+                    [2, 4], 
+                    [3, 5], 
+                    [2, 4, 4], 
+                    [1, 6, 1], 
+                    [1, 6, 2, 1], 
+                    [2, 6, 5],
+                    [3, 4, 5], 
+                    [3, 2, 1], 
+                    [2, 8, 1], 
+                    [3, 1, 1, 3], 
+                    [1, 1, 1, 1], 
+                    [1, 1], 
+                    [1, 1], 
+                    [8]],
+                secondDimensionNumbers: [
+                    [6],
+                    [2, 5], 
+                    [3, 2, 3], 
+                    [3, 1, 1], 
+                    [2, 3, 1, 1],
+                    [1, 5, 1, 1], 
+                    [1, 5, 3, 1], 
+                    [1, 5, 1, 1], 
+                    [1, 5, 1, 1], 
+                    [3, 3, 3, 1], 
+                    [4, 1, 1], 
+                    [4, 2, 1, 1], 
+                    [4, 4, 1, 1], 
+                    [3, 4, 3], 
+                    [2, 2, 1], 
+                    [6]]
+            });
+            expect(result.solutions.length).toBe(2);
+            expect(result.solutions[0].numberOfGuesses).toBe(2);
+            expect(result.solutions[0].solution).toBe(gridFromString(`
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            OOOOOOOOOOOOOOOO
+            `));
+        });
     });
 
     describe('when solving a nonogram purely deductively without guessing', () => {
