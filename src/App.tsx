@@ -1,65 +1,32 @@
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import './App.css';
-
-import Grid from './grid/Grid'
+import Grid from './grid/Grid';
 import Guide from './Guide/Guide';
-import { Pixel } from './Pixel';
-import { NonogramKey, NonogramSolution } from './models/nonogram-parameter';
-import { generateKey } from './Guide/guide-number-generator';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { solveNonogram } from './nonogram-solver/nonogram-solve';
 import StatBlock from './StatBlock/StatBlock';
-import { getLastItem } from './utilities/utilities';
+import { ObservableGridStateStore } from './stores/grid-store';
 
 interface State {
-  grid: Pixel[][];
-  gridKey: NonogramKey;
-  solutions: NonogramSolution[];
+  gridStore: ObservableGridStateStore;
 }
 
+@observer
 class App extends React.Component<object, State> {
-  private keyChangedSubject: Subject<NonogramKey>;
   
   constructor(props: object){
     super(props);
     this.state = {
-      grid: [],
-      gridKey: {firstDimensionNumbers: [], secondDimensionNumbers: []},
-      solutions: []
+      gridStore: new ObservableGridStateStore()
     };
-    this.keyChangedSubject = new Subject<NonogramKey>();
-    this.keyChangedSubject.pipe(
-      debounceTime(1000)
-    ).subscribe(key => {
-      console.log(key);
-      const solved = getLastItem(solveNonogram(key));
-      console.log(solved);
-      this.setState({
-        solutions: solved.solutions
-      });
-    })
-  }
-
-  private gridChanged(grid: Pixel[][]){
-    const key = generateKey(grid.map(x => x.map(pixel => pixel.isBlack)));
-    this.keyChangedSubject.next(key);
-    this.setState({
-      grid,
-      gridKey: key
-    });
+    this.state.gridStore.instantiateGrid(16, 16);
   }
 
   public render() {
     return (
       <div className="App">
-        <Grid width={16} height={16} onGridChanged={
-          (grid: Pixel[][]) => {
-            this.gridChanged(grid);
-          }
-        } />
-        <StatBlock solutions={this.state.solutions}></StatBlock>
-        <Guide nonogramKey={this.state.gridKey}></Guide>
+        <Grid gridStore={ this.state.gridStore }/>
+        <StatBlock solutions={this.state.gridStore.solution.solutions}></StatBlock>
+        <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
       </div>
     );
   }

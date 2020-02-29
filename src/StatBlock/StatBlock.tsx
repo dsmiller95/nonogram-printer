@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NonogramSolution } from '../models/nonogram-parameter';
 import './StatBlock.css';
+import { observer } from 'mobx-react';
 
 export interface IProps {
     solutions: NonogramSolution[];
@@ -9,6 +10,7 @@ export interface IProps {
 interface IState {
 }
 
+@observer
 class StatBlock extends React.Component<IProps, IState> {
 
     constructor(props: IProps){

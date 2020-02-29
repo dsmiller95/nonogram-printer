@@ -109,7 +109,7 @@ describe('nonogram solver', () => {
             `));
         });
 
-        fit('generates partial solutions while solving a nonogram which requires guessing', () => {
+        it('generates partial solutions while solving a nonogram which requires guessing', () => {
             const expectedSteps = [
                 {
                     type: NonogramAction.GUESS,
