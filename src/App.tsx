@@ -24,9 +24,13 @@ class App extends React.Component<object, State> {
   public render() {
     return (
       <div className="App">
-        <Grid gridStore={ this.state.gridStore }/>
-        <StatBlock solutions={this.state.gridStore.solution.solutions}></StatBlock>
-        <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
+        <div className="sidePanel">
+          <StatBlock solutions={this.state.gridStore.solution.solutions}></StatBlock>
+          <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
+        </div>
+        <div className="gridPanel">
+          <Grid gridStore={ this.state.gridStore }/>
+        </div>
       </div>
     );
   }

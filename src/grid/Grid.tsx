@@ -41,29 +41,31 @@ class Grid extends React.Component<IProps, IState> {
         const store = this.props.gridStore;
 
         return (
-            <div className="Grid">
-                {store.grid.map((row, rowIndex) => 
-                    <div key={rowIndex} className="row">
-                        {row.map((item, colIndex) => 
-                            <div
-                                key={colIndex}
-                                className={"col" + (item === Pixel.Black ? " black" : "") + (item === Pixel.Yellow ? " yellow" : "")}
-                                onMouseEnter={() => {
-                                    if(this.isDragging){
+            <div className="gridContainer">
+                <div className="Grid">
+                    {store.grid.map((row, rowIndex) => 
+                        <div key={rowIndex} className="row">
+                            {row.map((item, colIndex) => 
+                                <div
+                                    key={colIndex}
+                                    className={"col" + (item === Pixel.Black ? " black" : "") + (item === Pixel.Yellow ? " yellow" : "")}
+                                    onMouseEnter={() => {
+                                        if(this.isDragging){
+                                            store.updatePixel(rowIndex, colIndex);
+                                        }
+                                    }}
+                                    onMouseDown={() => {
+                                        this.isDragging = true;
                                         store.updatePixel(rowIndex, colIndex);
-                                    }
-                                }}
-                                onMouseDown={() => {
-                                    this.isDragging = true;
-                                    store.updatePixel(rowIndex, colIndex);
-                                }}
-                                onMouseUp={() => {
-                                    this.isDragging = false;
-                                }}
-                            />
-                        )}
-                    </div>
-                )}
+                                    }}
+                                    onMouseUp={() => {
+                                        this.isDragging = false;
+                                    }}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }

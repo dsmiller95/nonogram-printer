@@ -1,3 +1,19 @@
+.gridContainer {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+}
+
+.Grid {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 .black {
   background-color: black;
 }
@@ -5,14 +21,13 @@
   background-color: yellow;
 }
 
-.Grid .col {
-  border: 1px solid black;
-  display: inline-block;
-  min-width: 50px;
-  min-height: 50px;
+.Grid .row {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
 }
 
-.Grid .row {
-  min-height: 50px;
-  display: inline-grid;
+.Grid .col {
+  border: 1px solid black;
+  flex-grow: 1;
 }
