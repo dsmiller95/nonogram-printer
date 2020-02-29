@@ -1,10 +1,10 @@
-# Nonogram designer and solver
+# [Nonogram designer and solver](https://dsmiller95.github.io/nonogram-printer)
 
-This project was created to design nonogram puzzles and print out guides for these puzzles. Visit the [GH Pages site](https://dsmiller95.github.io/nonogram-printer) to start playing around!
+This project was created to design nonogram puzzles and print out guides for these puzzles; hosted here on GH pages: [Designer](https://dsmiller95.github.io/nonogram-printer)
 
 ## Edit mode
 
-While in edit mode, the sidebar will display a summary of some difficulty metrics of the puzzle based on an attempt to solve it. You'll be able to see how many solutions there are to the puzzle, and a summary of the number of guesses required to get to each solution.
+While in edit mode, the sidebar will display a summary of some difficulty metrics of the puzzle based on an attempt to solve it. You'll be able to see how many solutions there are to the puzzle, and a summary of the number of guesses required to get to each solution. The summary updates will be debounced because sometimes the solver can take significant time and lock the UI.
 
 ## Solve mode
 
