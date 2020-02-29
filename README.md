@@ -2,6 +2,8 @@
 
 This project was created to design nonogram puzzles and print out guides for these puzzles; hosted here on GH pages: [Designer](https://dsmiller95.github.io/nonogram-printer)
 
+If you can design a nonogram which the solver can't handle, please grab a screenshot and submit an issue in this repository
+
 ## Edit mode
 
 While in edit mode, the sidebar will display a summary of some difficulty metrics of the puzzle based on an attempt to solve it. You'll be able to see how many solutions there are to the puzzle, and a summary of the number of guesses required to get to each solution. The summary updates will be debounced because sometimes the solver can take significant time and lock the UI.
