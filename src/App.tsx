@@ -1,7 +1,7 @@
-import { Typography } from '@material-ui/core';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import './App.css';
+import GridSolverInfo from './grid-solver-info/grid-solver-info';
 import Grid from './grid/Grid';
 import Guide from './Guide/Guide';
 import { GridEditMode } from './models/grid-edit-mode';
@@ -35,7 +35,7 @@ class App extends React.Component<object, State> {
             (this.state.gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
             (this.state.gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
         >
-          <Typography>Edit</Typography>
+          <GridSolverInfo gridStore={ this.state.gridStore }></GridSolverInfo>
           <div className="grid-container-padding">
             <Grid gridStore={ this.state.gridStore }/>
           </div>

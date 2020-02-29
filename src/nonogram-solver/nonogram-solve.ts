@@ -1,4 +1,4 @@
-import { NonogramKey, SolvedNonogram, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction } from '../models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction, RewindAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
 import { NonogramCell } from 'src/models/nonogram-cell';
 
@@ -6,7 +6,9 @@ export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonog
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
     yield {
-        lastAction: {type: NonogramAction.REWIND},
+        lastAction: {
+            type: NonogramAction.REWIND,
+            reason: 'this is the first grid'} as RewindAction,
         partialSolution: workingGrid
     }
 
@@ -37,7 +39,10 @@ function* solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: Nonogram
                 let newSolutions = yield* attemptToSolveWithGuess(nonogramKey, inputGrid, previousGuesses, first, second, NonogramCell.SET);
                 allSolutions = allSolutions.concat(newSolutions);
                 yield {
-                    lastAction: {type: NonogramAction.REWIND},
+                    lastAction: {
+                        type: NonogramAction.REWIND,
+                        reason: allSolutions.length > 0 ? 'there could be more solutions' : 'no were found with the last guess'
+                    } as RewindAction,
                     partialSolution: inputGrid
                 }
                 newSolutions = yield* attemptToSolveWithGuess(nonogramKey, inputGrid, previousGuesses, first, second, NonogramCell.UNSET);

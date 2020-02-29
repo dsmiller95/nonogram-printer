@@ -36,6 +36,12 @@ export class GuessAction extends NonogramActionData{
     guess: NonogramCell;
 }
 
+
+export class RewindAction extends NonogramActionData{
+    type: NonogramAction.REWIND;
+    reason: string;
+}
+
 export enum NonogramAction {
     EVALUATE_ROW,
     GUESS,

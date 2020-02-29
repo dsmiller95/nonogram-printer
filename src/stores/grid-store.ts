@@ -84,9 +84,7 @@ export class ObservableGridStateStore{
     }
 
     @action nextSolutionStep() {
-        console.log('stepped');
         const nextStep = this.solutionGenerator.next();
-        console.log(nextStep);
         if(nextStep.done){
             this.partialSolution = undefined;
             return;
@@ -94,7 +92,6 @@ export class ObservableGridStateStore{
         this.partialSolution = nextStep.value;
         const newPartialSolution = this.partialSolution.partialSolution.gridData.map(row => 
             row.map(cell => this.nonogramCellToPixel(cell)));
-        console.log(newPartialSolution);
         this.partialGridSolve = newPartialSolution;
     }
 
