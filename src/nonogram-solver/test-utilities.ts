@@ -1,4 +1,4 @@
-import { NonogramCell } from '../models/nonogram-parameter';
+import { NonogramCell } from 'src/models/nonogram-cell';
 
 /**
  * X : set

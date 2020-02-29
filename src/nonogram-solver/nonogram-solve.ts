@@ -1,8 +1,14 @@
-import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction } from '../models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
+import { NonogramCell } from 'src/models/nonogram-cell';
 
-export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonogramSolution, SolvedNonogram, undefined>{
+export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonogramSolution, SolvedNonogram, undefined> {
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
+
+    yield {
+        lastAction: {type: NonogramAction.REWIND},
+        partialSolution: workingGrid
+    }
 
     const firstSolve = yield* furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
     if(firstSolve === undefined){

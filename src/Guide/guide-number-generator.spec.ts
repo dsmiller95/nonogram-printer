@@ -1,6 +1,6 @@
-import { NonogramCell } from '../models/nonogram-parameter';
 import { gridFromString } from '../nonogram-solver/test-utilities';
 import { generateKey, addPaddingToGuides, nonogramKeyToGuideNumbers } from './guide-number-generator';
+import { NonogramCell } from 'src/models/nonogram-cell';
 
 describe('when generating guides based off of a grid', () => {
     it('should generate guides from a given grid with the right amount of padding', () => {

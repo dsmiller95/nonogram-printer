@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ObservableGridStateStore } from 'src/stores/grid-store';
 import './StatBlock.css';
+import { GridEditMode } from 'src/models/grid-edit-mode';
 
 export interface IProps {
     gridStore: ObservableGridStateStore;
@@ -19,10 +20,15 @@ class StatBlock extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const solutions = this.props.gridStore.solution.solutions;
+        const gridStore = this.props.gridStore;
+        const solutions = gridStore.solution.solutions;
         const switchMode = () => {
-            this.props.gridStore.switchMode();
+            gridStore.switchMode();
         }
+        const stepSolve = () => {
+            gridStore.nextSolutionStep();
+        }
+        const isSolving = gridStore.mode === GridEditMode.SOLVE;
         return (
             <Card className="StatBlock" variant="outlined">
                 <CardContent>
@@ -48,8 +54,12 @@ class StatBlock extends React.Component<IProps, IState> {
                 <CardActions>
                     <Button size="small" variant="contained" color="default"
                         onClick={switchMode} >
-                        Step Solve
+                        {gridStore.mode === GridEditMode.EDIT ? 'Step Solve' : 'Edit'}
                     </Button>
+                    {isSolving ? <Button size="small" variant="contained" color="default"
+                        onClick={stepSolve} >
+                        Step
+                    </Button> : ''}
                 </CardActions>
             </Card>
         );

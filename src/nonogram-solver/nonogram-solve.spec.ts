@@ -1,8 +1,9 @@
 import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing, checkSliceValidity } from './nonogram-solve';
-import { NonogramCell, NonogramAction } from '../models/nonogram-parameter';
+import { NonogramAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
 import { gridFromString, rowFromString } from './test-utilities';
 import { getLastItem } from '../utilities/utilities';
+import { NonogramCell } from 'src/models/nonogram-cell';
 
 describe('nonogram solver', () => {
     describe('when solving a whole grid', () => {
@@ -112,6 +113,8 @@ describe('nonogram solver', () => {
         it('generates partial solutions while solving a nonogram which requires guessing', () => {
             const expectedSteps = [
                 {
+                    type: NonogramAction.REWIND
+                }, {
                     type: NonogramAction.GUESS,
                     firstDimensionIndex: 0,
                     secondDimensionIndex: 0,

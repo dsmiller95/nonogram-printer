@@ -1,4 +1,5 @@
 import { NonogramGrid } from './nonogram-grid';
+import { NonogramCell } from './nonogram-cell';
 export interface NonogramKey {
     firstDimensionNumbers: number[][];
     secondDimensionNumbers: number[][];
@@ -39,10 +40,4 @@ export enum NonogramAction {
     EVALUATE_ROW,
     GUESS,
     REWIND
-}
-
-export enum NonogramCell {
-    UNSET = 0,
-    SET = 1,
-    UNKNOWN = 2
 }

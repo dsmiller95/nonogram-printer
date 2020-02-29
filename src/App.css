@@ -13,7 +13,7 @@
   flex-basis: 80%;
   flex-shrink: 1;
   flex-grow: 1;
-  max-width: 100vh;
+  max-width: 97vh;
   display: flex;
   flex-direction: column;
 }
@@ -28,4 +28,5 @@
 .grid-container-padding {
   padding: 5px;
   width: 100%;
+  box-sizing: border-box;
 }

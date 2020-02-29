@@ -2,6 +2,8 @@ import * as React from 'react';
 import { ObservableGridStateStore } from 'src/stores/grid-store';
 import './Grid.css';
 import { Pixel } from 'src/Pixel';
+import { GridEditMode } from 'src/models/grid-edit-mode';
+import { observer } from 'mobx-react';
 
 export interface IProps {
     gridStore: ObservableGridStateStore;
@@ -10,40 +12,23 @@ export interface IProps {
 interface IState {
 }
 
+@observer
 class Grid extends React.Component<IProps, IState> {
 
     constructor(props: IProps){
         super(props);
-        // this.state = {
-        //     grid: this.generateGrid(props.width, props.height)
-        // }
     }
 
     private isDragging = false;
 
     public render() {
-
-        // if(!this.state.grid ||
-        //     this.state.grid.length != this.props.width ||
-        //     this.state.grid[0].length != this.props.height)
-        // {
-        //     this.setState({grid: this.generateGrid(this.props.width, this.props.height)});
-        //     console.log(this.state.grid.length);
-        //     console.log(this.state.grid[0].length);
-        // }
-
-        // let updatePixel = (pixel: Pixel) => {
-        //     pixel.pixelClicked();
-        //     this.props.onGridChanged(this.state.grid);
-        //     this.setState(this.state);
-        // }
-
         const store = this.props.gridStore;
-
+        const isEditable = store.mode === GridEditMode.EDIT;
+        const grid = isEditable ? store.grid : store.partialGridSolve;
         return (
             <div className="gridContainer">
                 <div className="Grid">
-                    {store.grid.map((row, rowIndex) => 
+                    {grid.map((row, rowIndex) => 
                         <div key={rowIndex} className="row">
                             {row.map((item, colIndex) => 
                                 <div
@@ -58,6 +43,7 @@ class Grid extends React.Component<IProps, IState> {
                                         }
                                     }}
                                     onMouseDown={() => {
+                                        if(!isEditable) return;
                                         this.isDragging = true;
                                         store.updatePixel(rowIndex, colIndex);
                                     }}

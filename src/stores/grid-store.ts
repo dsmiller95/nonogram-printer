@@ -1,19 +1,22 @@
-import { autorun, computed, observable, action } from "mobx";
+import { action, autorun, computed, observable } from "mobx";
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { generateKey } from 'src/Guide/guide-number-generator';
-import { NonogramKey, SolvedNonogram } from 'src/models/nonogram-parameter';
+import { GridEditMode } from 'src/models/grid-edit-mode';
+import { NonogramCell } from 'src/models/nonogram-cell';
+import { NonogramKey, PartialNonogramSolution, SolvedNonogram } from 'src/models/nonogram-parameter';
 import { solveNonogram } from 'src/nonogram-solver/nonogram-solve';
 import { Pixel } from "src/Pixel";
 import { getLastItem } from 'src/utilities/utilities';
-import { GridEditMode } from 'src/models/grid-edit-mode';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
+    @observable partialGridSolve: Pixel[][];
     @observable solution: SolvedNonogram = {
         solutions: []
     };
     @observable mode: GridEditMode = GridEditMode.EDIT;
+    @observable partialSolution: PartialNonogramSolution | undefined;
 
     constructor(){
         const keyChangedSubject = new Subject<NonogramKey>();
@@ -38,7 +41,11 @@ export class ObservableGridStateStore{
     }
 
     @action switchMode(){
-        this.mode = (this.mode + 1) % 2;
+        if(this.mode === GridEditMode.EDIT){
+            this.beginSolving();
+        } else {
+            this.mode = GridEditMode.EDIT
+        }
     }
 
     @action updatePixel(row: number, column: number){
@@ -49,6 +56,46 @@ export class ObservableGridStateStore{
 
     @action computeSolution() {
         this.solution = getLastItem(solveNonogram(this.gridKey));
+    }
+
+    private solutionGenerator: Generator<PartialNonogramSolution, SolvedNonogram, undefined>;
+    @action beginSolving() {
+        this.mode = GridEditMode.SOLVE;
+        this.solutionGenerator = solveNonogram(this.gridKey);
+        const nextStep = this.solutionGenerator.next();
+        if(nextStep.done){
+            this.partialSolution = undefined;
+            return;
+        }
+        this.partialSolution = nextStep.value;
+        this.partialGridSolve = this.partialSolution.partialSolution.gridData.map(row => 
+            row.map(cell => this.nonogramCellToPixel(cell)));
+    }
+
+    private nonogramCellToPixel(cell: NonogramCell): Pixel {
+        switch(cell){
+            case NonogramCell.SET:
+                return Pixel.Black;
+            case NonogramCell.UNSET:
+                return Pixel.White;
+            case NonogramCell.UNKNOWN:
+                return Pixel.Yellow;
+        }
+    }
+
+    @action nextSolutionStep() {
+        console.log('stepped');
+        const nextStep = this.solutionGenerator.next();
+        console.log(nextStep);
+        if(nextStep.done){
+            this.partialSolution = undefined;
+            return;
+        }
+        this.partialSolution = nextStep.value;
+        const newPartialSolution = this.partialSolution.partialSolution.gridData.map(row => 
+            row.map(cell => this.nonogramCellToPixel(cell)));
+        console.log(newPartialSolution);
+        this.partialGridSolve = newPartialSolution;
     }
 
     @action instantiateGrid(width: number, height: number){
