@@ -1,8 +1,10 @@
+import { Typography } from '@material-ui/core';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import './App.css';
 import Grid from './grid/Grid';
 import Guide from './Guide/Guide';
+import { GridEditMode } from './models/grid-edit-mode';
 import StatBlock from './StatBlock/StatBlock';
 import { ObservableGridStateStore } from './stores/grid-store';
 
@@ -25,11 +27,18 @@ class App extends React.Component<object, State> {
     return (
       <div className="App">
         <div className="sidePanel">
-          <StatBlock solutions={this.state.gridStore.solution.solutions}></StatBlock>
+          <StatBlock gridStore={this.state.gridStore}></StatBlock>
           <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
         </div>
-        <div className="gridPanel">
-          <Grid gridStore={ this.state.gridStore }/>
+        <div 
+          className={"gridPanel" + 
+            (this.state.gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
+            (this.state.gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
+        >
+          <Typography>Edit</Typography>
+          <div className="grid-container-padding">
+            <Grid gridStore={ this.state.gridStore }/>
+          </div>
         </div>
       </div>
     );

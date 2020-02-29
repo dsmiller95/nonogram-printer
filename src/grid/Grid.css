@@ -20,6 +20,9 @@
 .yellow {
   background-color: yellow;
 }
+.white {
+  background-color: white;
+}
 
 .Grid .row {
   display: flex;

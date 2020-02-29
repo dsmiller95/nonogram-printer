@@ -6,12 +6,14 @@ import { NonogramKey, SolvedNonogram } from 'src/models/nonogram-parameter';
 import { solveNonogram } from 'src/nonogram-solver/nonogram-solve';
 import { Pixel } from "src/Pixel";
 import { getLastItem } from 'src/utilities/utilities';
+import { GridEditMode } from 'src/models/grid-edit-mode';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
     @observable solution: SolvedNonogram = {
         solutions: []
     };
+    @observable mode: GridEditMode = GridEditMode.EDIT;
 
     constructor(){
         const keyChangedSubject = new Subject<NonogramKey>();
@@ -33,6 +35,10 @@ export class ObservableGridStateStore{
             });
         }
         return generateKey(this.grid.map(x => x.map(pix => pix === Pixel.Black)));
+    }
+
+    @action switchMode(){
+        this.mode = (this.mode + 1) % 2;
     }
 
     @action updatePixel(row: number, column: number){

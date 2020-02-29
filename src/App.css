@@ -14,4 +14,18 @@
   flex-shrink: 1;
   flex-grow: 1;
   max-width: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-panel-editing {
+  background-color: aqua;
+}
+.grid-panel-solving {
+  background-color: salmon;
+}
+
+.grid-container-padding {
+  padding: 5px;
+  width: 100%;
 }
