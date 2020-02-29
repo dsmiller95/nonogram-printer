@@ -1,24 +1,23 @@
-import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution } from '../models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram, NonogramCell, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
 
-export function solveNonogram(nonogramKey: NonogramKey): SolvedNonogram {
+export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonogramSolution, SolvedNonogram, undefined>{
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
 
-    const firstSolve = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
+    const firstSolve = yield* furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
     if(firstSolve === undefined){
         return {solutions: []};
     }
 
-
     try {
-        const results = solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
+        const results = yield* solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
         return {solutions: results};
     } catch {
         return {solutions: []};
     }
 }
 
-function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number): NonogramSolution[] {
+function* solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number): Generator<PartialNonogramSolution, NonogramSolution[], undefined> {
     if(inputGrid.isSolved){
         return [{
             numberOfGuesses: previousGuesses,
@@ -29,19 +28,14 @@ function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramG
     for(let first = 0; first < inputGrid.getDimensionSize(0); first++){
         for(let second = 0; second < inputGrid.getDimensionSize(1); second++){
             if(inputGrid.getCell(first, second) === NonogramCell.UNKNOWN){
-                let newGrid = inputGrid.clone();
-                newGrid.setCell(first, second, NonogramCell.SET);
-                let solvedAttempt = furtherSolveNonogramWithoutGuessing(nonogramKey, newGrid);
-                if(solvedAttempt !== undefined){
-                    allSolutions = allSolutions.concat(solveNonogramWithGuesses(nonogramKey, solvedAttempt, previousGuesses + 1));
+                let newSolutions = yield* attemptToSolveWithGuess(nonogramKey, inputGrid, previousGuesses, first, second, NonogramCell.SET);
+                allSolutions = allSolutions.concat(newSolutions);
+                yield {
+                    lastAction: {type: NonogramAction.REWIND},
+                    partialSolution: inputGrid
                 }
-
-                newGrid = inputGrid.clone();
-                newGrid.setCell(first, second, NonogramCell.UNSET);
-                solvedAttempt = furtherSolveNonogramWithoutGuessing(nonogramKey, newGrid);
-                if(solvedAttempt !== undefined){
-                    allSolutions = allSolutions.concat(solveNonogramWithGuesses(nonogramKey, solvedAttempt, previousGuesses + 1));
-                }
+                newSolutions = yield* attemptToSolveWithGuess(nonogramKey, inputGrid, previousGuesses, first, second, NonogramCell.UNSET);
+                allSolutions = allSolutions.concat(newSolutions);
 
                 if(allSolutions.length <= 0){
                     throw `ERROR: invalid nonogram. no solution for cell ${first}, ${second}`
@@ -53,6 +47,25 @@ function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramG
     return allSolutions;
 }
 
+function* attemptToSolveWithGuess(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number, first: number, second: number, guessState: NonogramCell): Generator<PartialNonogramSolution, NonogramSolution[], undefined>{
+    let newGrid = inputGrid.clone();
+    newGrid.setCell(first, second, guessState);
+    yield {
+        lastAction: {
+            type: NonogramAction.GUESS,
+            firstDimensionIndex: first,
+            secondDimensionIndex: second,
+            guess: guessState
+        } as GuessAction,
+        partialSolution: newGrid
+    }
+    let solvedAttempt = yield* furtherSolveNonogramWithoutGuessing(nonogramKey, newGrid);
+    if(solvedAttempt !== undefined) {
+        return yield* solveNonogramWithGuesses(nonogramKey, solvedAttempt, previousGuesses + 1);
+    }
+    return [];
+}
+
 
 /**
  * If the passed in grid does not create a rule contradiction, returns a further solved grid
@@ -60,34 +73,45 @@ function solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramG
  * @param nonogramKey the key off of which to solve the nonogram
  * @param workingGrid The current grid the algorithm should try to solve from
  */
-export function furtherSolveNonogramWithoutGuessing(nonogramKey: NonogramKey, workingGrid: NonogramGrid): NonogramGrid | undefined{
+export function* furtherSolveNonogramWithoutGuessing(nonogramKey: NonogramKey, workingGrid: NonogramGrid): Generator<PartialNonogramSolution, NonogramGrid | undefined, undefined> {
     let lastGridHash = '';
     while(lastGridHash != (lastGridHash = workingGrid.getGridHash()) ) {
-        let result = solveByEachDimension(workingGrid, nonogramKey);
+        let result = yield* solveByEachDimension(workingGrid, nonogramKey);
         if(result === undefined) return undefined;
         workingGrid = result;
     }
     return workingGrid;
 }
 
-function solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey): NonogramGrid | undefined{
-    let result = furtherSolveByDimension(workingGrid, 0, key.firstDimensionNumbers);
+function* solveByEachDimension(workingGrid: NonogramGrid, key: NonogramKey): Generator<PartialNonogramSolution, NonogramGrid | undefined, undefined> {
+    let result = yield* furtherSolveByDimension(workingGrid, 0, key.firstDimensionNumbers);
     if(result === undefined) return undefined;
-    result = furtherSolveByDimension(result, 1, key.secondDimensionNumbers);
-    if(result === undefined) return undefined;
+    result = yield* furtherSolveByDimension(result, 1, key.secondDimensionNumbers);
     return result;
 }
 
-function furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]): NonogramGrid | undefined {
+function* furtherSolveByDimension(workingGrid: NonogramGrid, dimension: number, numbersOnDimension: number[][]):  Generator<PartialNonogramSolution, NonogramGrid | undefined, undefined> {
     const resultGrid = workingGrid.clone();
     for (let indexInDimension = 0; indexInDimension < resultGrid.getDimensionSize(dimension); indexInDimension++) {
+        const previousSlice = resultGrid.getSliceAcrossArray(dimension, indexInDimension);
         const furtherSolvedSlice = attemptToFurtherSolveSlice(
-            resultGrid.getSliceAcrossArray(dimension, indexInDimension),
+            previousSlice,
             numbersOnDimension[indexInDimension]);
         if(furtherSolvedSlice === undefined){
             return undefined;
         }
         resultGrid.applySliceAcrossArray(dimension, indexInDimension, furtherSolvedSlice);
+        
+        if(previousSlice.some((cell, index) => cell !== furtherSolvedSlice[index]) ){
+            yield {
+                lastAction: {
+                    type: NonogramAction.EVALUATE_ROW,
+                    index: indexInDimension,
+                    dimension
+                } as EvaluateRowAction,
+                partialSolution: resultGrid
+            } as PartialNonogramSolution;
+        }
     }
     return resultGrid;
 }
@@ -195,7 +219,7 @@ export function* slicePermutationGenerator(
     currentSlice: NonogramCell[],
     sliceNumbers: number[],
     sliceStartIndex: number = 0,
-    sliceEnd: number = currentSlice.length): Generator<NonogramCell[], undefined, never> {
+    sliceEnd: number = currentSlice.length): Generator<NonogramCell[], undefined, undefined> {
 
     const currentSpaceLength = sliceEnd - sliceStartIndex;
     if(sliceNumbers.length === 0){

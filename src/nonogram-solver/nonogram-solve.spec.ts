@@ -1,43 +1,44 @@
 import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing, checkSliceValidity } from './nonogram-solve';
-import { NonogramCell } from '../models/nonogram-parameter';
+import { NonogramCell, NonogramAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
 import { gridFromString, rowFromString } from './test-utilities';
+import { getLastItem } from '../utilities/utilities';
 
 describe('nonogram solver', () => {
     describe('when solving a whole grid', () => {
         it('solves an empty case', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [],
                 secondDimensionNumbers: []
-            });
+            }));
             expect(result.solutions[0].solution.gridData.length).toBe(0);
         });
 
         it('solves a single unset cell', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[]],
                 secondDimensionNumbers: [[]]
-            });
+            }));
             expect(result.solutions[0].solution.gridData.length).toBe(1);
             expect(result.solutions[0].solution.gridData[0].length).toBe(1);
             expect(result.solutions[0].solution.gridData[0][0]).toBe(NonogramCell.UNSET);
         });
 
         it('solves a single set cell', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[1]],
                 secondDimensionNumbers: [[1]]
-            });
+            }));
             expect(result.solutions[0].solution.gridData.length).toBe(1);
             expect(result.solutions[0].solution.gridData[0].length).toBe(1);
             expect(result.solutions[0].solution.gridData[0][0]).toBe(NonogramCell.SET);
         });
 
         it('solves a trivial nonogram which only requires on dimension of numbers', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[3], [1, 1], [3]],
                 secondDimensionNumbers: [[3], [1, 1], [3]]
-            });
+            }));
             expect(result.solutions[0].solution.gridData.length).toBe(3);
             expect(result.solutions[0].solution.gridData[0].length).toBe(3);
             expect(result.solutions[0].solution.gridData).toEqual([
@@ -48,10 +49,10 @@ describe('nonogram solver', () => {
         });
 
         it('solves a nonogram which requires both number dimensions', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[1], [1], [3]],
                 secondDimensionNumbers: [[3], [1], [1]]
-            });
+            }));
             expect(result.solutions[0].solution.gridData.length).toBe(3);
             expect(result.solutions[0].solution.gridData[0].length).toBe(3);
             expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
@@ -62,10 +63,10 @@ describe('nonogram solver', () => {
         });
 
         it('solves a nonogram which requires multiple steps between dimensions', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[3], [], [1, 1], [1]],
                 secondDimensionNumbers: [[1, 1], [1], [1, 2], []]
-            });
+            }));
             expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
                         XXXO
                         OOOO
@@ -75,10 +76,11 @@ describe('nonogram solver', () => {
         });
 
         it('solves a nonogram which requires guessing', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[1, 1], [1], [1, 1], [1, 1]],
                 secondDimensionNumbers: [[2], [2], [2], [1]]
-            });
+            }));
+
             expect(result.solutions.length).toEqual(1);
             expect(result.solutions[0].numberOfGuesses).toEqual(1);
             expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
@@ -90,10 +92,10 @@ describe('nonogram solver', () => {
         });
 
         it('returns multiple results when a nonogram has multiple solutions', () => {
-            const result = solveNonogram({
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [[1], [1]],
                 secondDimensionNumbers: [[1], [1]]
-            });
+            }));
             expect(result.solutions.length).toEqual(2);
             expect(result.solutions[0].numberOfGuesses).toEqual(1);
             expect(result.solutions[0].solution.gridData).toEqual(gridFromString(`
@@ -107,8 +109,91 @@ describe('nonogram solver', () => {
             `));
         });
 
-        fit('solves a big nonogram with multiple solutions and guessing', () => {
+        fit('generates partial solutions while solving a nonogram which requires guessing', () => {
+            const expectedSteps = [
+                {
+                    type: NonogramAction.GUESS,
+                    firstDimensionIndex: 0,
+                    secondDimensionIndex: 0,
+                    guess: NonogramCell.SET
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 0
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 0
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 1
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 1
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 2
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 3
+                }, {
+                    type: NonogramAction.REWIND
+                }, {
+                    type: NonogramAction.GUESS,
+                    firstDimensionIndex: 0,
+                    secondDimensionIndex: 0,
+                    guess: NonogramCell.UNSET
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 0
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 0
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 1
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 2
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 1, index: 3
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 1
+                }, {
+                    type: NonogramAction.EVALUATE_ROW,
+                    dimension: 0, index: 3
+                }
+            ];
+
             const result = solveNonogram({
+                firstDimensionNumbers: [[1, 1], [1], [1, 1], [1, 1]],
+                secondDimensionNumbers: [[2], [2], [2], [1]]
+            });
+
+            let index = 0;
+            let iterate = result.next();
+            for(; !iterate.done; iterate = result.next()){
+                if(index >= expectedSteps.length){
+                    fail('More steps to solve than expected');
+                }
+                let expectedStep = expectedSteps[index];
+                expect(iterate.value.lastAction).toEqual(expectedStep)
+                index++;
+            }
+            const solvedResult = iterate.value;
+
+            expect(solvedResult.solutions.length).toEqual(1);
+            expect(solvedResult.solutions[0].numberOfGuesses).toEqual(1);
+            expect(solvedResult.solutions[0].solution.gridData).toEqual(gridFromString(`
+                        OXOX
+                        OXOO
+                        XOXO
+                        XOXO
+            `));
+        });
+
+        it('solves a big nonogram with multiple solutions and guessing', () => {
+            const result = getLastItem(solveNonogram({
                 firstDimensionNumbers: [
                     [6], 
                     [2, 4], 
@@ -142,7 +227,8 @@ describe('nonogram solver', () => {
                     [3, 4, 3], 
                     [2, 2, 1], 
                     [6]]
-            });
+            }));
+            expect(result.solutions).toBeDefined();
             expect(result.solutions.length).toBe(2);
             expect(result.solutions[0].numberOfGuesses).toBe(2);
             expect(result.solutions[0].solution).toBe(gridFromString(`
@@ -173,7 +259,7 @@ describe('nonogram solver', () => {
                 secondDimensionNumbers: [[1, 2], [1], [1, 1], [1]]
             };
             const workingGrid = new NonogramGrid(4, 4);
-            const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
+            const result = getLastItem(furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid));
             expect((result as NonogramGrid).gridData).toEqual(gridFromString(`
                         XXXO
                         OOOO
@@ -189,7 +275,7 @@ describe('nonogram solver', () => {
             };
             const workingGrid = new NonogramGrid(2, 2);
             workingGrid.applySliceAcrossArray(0, 0, rowFromString('X-'));
-            const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
+            const result = getLastItem(furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid));
             expect(result).toBeDefined();
             expect((result as NonogramGrid).gridData).toEqual(gridFromString(`
                         XO
@@ -204,7 +290,7 @@ describe('nonogram solver', () => {
             };
             const workingGrid = new NonogramGrid(4, 4);
             workingGrid.applySliceAcrossArray(0, 1, rowFromString('---X'));
-            const result = furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid);
+            const result = getLastItem(furtherSolveNonogramWithoutGuessing(nonogramKey, workingGrid));
             expect(result).toBeUndefined();
         });
     });

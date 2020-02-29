@@ -10,6 +10,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { solveNonogram } from './nonogram-solver/nonogram-solve';
 import StatBlock from './StatBlock/StatBlock';
+import { getLastItem } from './utilities/utilities';
 
 interface State {
   grid: Pixel[][];
@@ -32,7 +33,7 @@ class App extends React.Component<object, State> {
       debounceTime(1000)
     ).subscribe(key => {
       console.log(key);
-      const solved = solveNonogram(key);
+      const solved = getLastItem(solveNonogram(key));
       console.log(solved);
       this.setState({
         solutions: solved.solutions

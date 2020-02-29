@@ -18,6 +18,6 @@ export class Pixel {
 
     value: PixelValue;
     pixelClicked() {
-        this.value = this.value === PixelValue.White ? PixelValue.Black : PixelValue.White;
+        this.value = (this.value+1)%3;// this.value === PixelValue.White ? PixelValue.Black : PixelValue.White;
     }
 }
