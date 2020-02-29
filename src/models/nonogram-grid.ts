@@ -1,5 +1,5 @@
 import { NonogramCell } from './nonogram-parameter';
-import * as md5 from 'md5';
+import { default as md5 }  from 'md5';
 
 export class NonogramGrid {
     gridData: NonogramCell[][];
