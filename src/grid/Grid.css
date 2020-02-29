@@ -11,16 +11,23 @@
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
+  right: 0; 
+  background-image: linear-gradient(45deg, black 25%, transparent 25%),
+    linear-gradient(-45deg, black 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, black 75%),
+    linear-gradient(-45deg, transparent 75%, black 75%);
+  background-size: 1.786% 1.786%;
+  background-position: 0 0, 0 0.893%, 0.893% -0.893%, -0.893% 0px;
+  background-color: white;
 }
 
-.black {
+.Grid .col.black {
   background-color: black;
 }
-.yellow {
-  background-color: yellow;
+.Grid .col.unknown {
+  border: 0.1px solid white;
 }
-.white {
+.Grid .col.white {
   background-color: white;
 }
 

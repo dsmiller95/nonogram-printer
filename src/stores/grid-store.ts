@@ -79,7 +79,7 @@ export class ObservableGridStateStore{
             case NonogramCell.UNSET:
                 return Pixel.White;
             case NonogramCell.UNKNOWN:
-                return Pixel.Yellow;
+                return Pixel.Unknown;
         }
     }
 

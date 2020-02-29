@@ -1,5 +1,5 @@
 export enum Pixel {
     White = 0,
-    Yellow = 1,
+    Unknown = 1,
     Black = 2,
 }

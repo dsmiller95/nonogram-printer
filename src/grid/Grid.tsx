@@ -35,7 +35,7 @@ class Grid extends React.Component<IProps, IState> {
                                     key={colIndex}
                                     className={"col" +
                                         (item === Pixel.Black ? " black" : "") +
-                                        (item === Pixel.Yellow ? " yellow" : "") +
+                                        (item === Pixel.Unknown ? " unknown" : "") +
                                         (item === Pixel.White ? " white" : "") }
                                     onMouseEnter={() => {
                                         if(this.isDragging){
