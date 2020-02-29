@@ -1,8 +1,9 @@
+import Button from '@material-ui/core/Button';
 import * as React from 'react';
-import './Guide.css';
-import qrCode from '../assets/self-link-qr.png';
-import { GuideNumbers, addPaddingToGuides, nonogramKeyToGuideNumbers } from './guide-number-generator';
 import { NonogramKey } from 'src/models/nonogram-parameter';
+import qrCode from '../assets/self-link-qr.png';
+import { addPaddingToGuides, GuideNumbers, nonogramKeyToGuideNumbers } from './guide-number-generator';
+import './Guide.css';
 
 export interface IProps {
     nonogramKey: NonogramKey
@@ -45,11 +46,10 @@ class Guide extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <button onClick={this.printStuff}>
-                    Print!!!
-                </button>
+                <Button onClick={this.printStuff} variant="contained" color="primary">
+                    Print
+                </Button>
                 <div className="Guide">
-                        
                     <span className="rows">
                         {tmpState.rows.reverse().map((row, index) => 
                             <div key={index} className="row">

@@ -1,13 +1,13 @@
 .StatBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: 10px;
 }
 
 .data-block {
-  width: fit-content;
+  width: 100%;
   padding: 3px;
-  border: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  /*border: 1px solid black;*/
 }
 .data-block .data-label{
   display: inline-block;

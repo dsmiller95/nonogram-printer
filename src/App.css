@@ -1,5 +1,4 @@
 .App {
-  text-align: center;
   display: flex;
   flex-direction: row;
 }
@@ -14,4 +13,5 @@
   flex-basis: 80%;
   flex-shrink: 1;
   flex-grow: 1;
+  max-width: 100vh;
 }
