@@ -1,9 +1,9 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@material-ui/core';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { ObservableGridStateStore } from 'src/stores/grid-store';
+import { ObservableGridStateStore } from '../stores/grid-store';
 import './StatBlock.css';
-import { GridEditMode } from 'src/models/grid-edit-mode';
+import { GridEditMode } from '../models/grid-edit-mode';
 
 export interface IProps {
     gridStore: ObservableGridStateStore;

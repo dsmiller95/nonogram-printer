@@ -1,13 +1,13 @@
 import { action, autorun, computed, observable } from "mobx";
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { generateKey } from 'src/Guide/guide-number-generator';
-import { GridEditMode } from 'src/models/grid-edit-mode';
-import { NonogramCell } from 'src/models/nonogram-cell';
-import { NonogramKey, PartialNonogramSolution, SolvedNonogram } from 'src/models/nonogram-parameter';
-import { solveNonogram } from 'src/nonogram-solver/nonogram-solve';
+import { generateKey } from '../Guide/guide-number-generator';
+import { GridEditMode } from '../models/grid-edit-mode';
+import { NonogramCell } from '../models/nonogram-cell';
+import { NonogramKey, PartialNonogramSolution, SolvedNonogram } from '../models/nonogram-parameter';
+import { solveNonogram } from '../nonogram-solver/nonogram-solve';
 import { Pixel } from "src/Pixel";
-import { getLastItem } from 'src/utilities/utilities';
+import { getLastItem } from '../utilities/utilities';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];

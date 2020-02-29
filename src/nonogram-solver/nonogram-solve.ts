@@ -1,6 +1,6 @@
 import { NonogramKey, SolvedNonogram, NonogramSolution, PartialNonogramSolution, NonogramAction, EvaluateRowAction, GuessAction, RewindAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
-import { NonogramCell } from 'src/models/nonogram-cell';
+import { NonogramCell } from '../models/nonogram-cell';
 
 export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonogramSolution, SolvedNonogram, undefined> {
     let workingGrid = new NonogramGrid(nonogramKey.firstDimensionNumbers.length, nonogramKey.secondDimensionNumbers.length);
@@ -17,12 +17,8 @@ export function* solveNonogram(nonogramKey: NonogramKey): Generator<PartialNonog
         return {solutions: []};
     }
 
-    try {
-        const results = yield* solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
-        return {solutions: results};
-    } catch {
-        return {solutions: []};
-    }
+    const results = yield* solveNonogramWithGuesses(nonogramKey, firstSolve, 0);
+    return {solutions: results};
 }
 
 function* solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: NonogramGrid, previousGuesses: number): Generator<PartialNonogramSolution, NonogramSolution[], undefined> {
@@ -41,16 +37,13 @@ function* solveNonogramWithGuesses(nonogramKey: NonogramKey, inputGrid: Nonogram
                 yield {
                     lastAction: {
                         type: NonogramAction.REWIND,
-                        reason: allSolutions.length > 0 ? 'there could be more solutions' : 'no were found with the last guess'
+                        reason: allSolutions.length > 0 ? 'there could be more solutions' : 'no solutions were found with the last guess'
                     } as RewindAction,
                     partialSolution: inputGrid
                 }
                 newSolutions = yield* attemptToSolveWithGuess(nonogramKey, inputGrid, previousGuesses, first, second, NonogramCell.UNSET);
                 allSolutions = allSolutions.concat(newSolutions);
-
-                if(allSolutions.length <= 0){
-                    throw `ERROR: invalid nonogram. no solution for cell ${first}, ${second}`
-                }
+                
                 return allSolutions;
             }
         }

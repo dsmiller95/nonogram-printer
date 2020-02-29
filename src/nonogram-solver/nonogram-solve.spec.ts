@@ -3,7 +3,7 @@ import { NonogramAction } from '../models/nonogram-parameter';
 import { NonogramGrid } from '../models/nonogram-grid';
 import { gridFromString, rowFromString } from './test-utilities';
 import { getLastItem } from '../utilities/utilities';
-import { NonogramCell } from 'src/models/nonogram-cell';
+import { NonogramCell } from '../models/nonogram-cell';
 
 describe('nonogram solver', () => {
     describe('when solving a whole grid', () => {
@@ -113,7 +113,8 @@ describe('nonogram solver', () => {
         it('generates partial solutions while solving a nonogram which requires guessing', () => {
             const expectedSteps = [
                 {
-                    type: NonogramAction.REWIND
+                    type: NonogramAction.REWIND,
+                    reason: 'this is the first grid'
                 }, {
                     type: NonogramAction.GUESS,
                     firstDimensionIndex: 0,
@@ -138,7 +139,8 @@ describe('nonogram solver', () => {
                     type: NonogramAction.EVALUATE_ROW,
                     dimension: 0, index: 3
                 }, {
-                    type: NonogramAction.REWIND
+                    type: NonogramAction.REWIND,
+                    reason: 'no solutions were found with the last guess'
                 }, {
                     type: NonogramAction.GUESS,
                     firstDimensionIndex: 0,

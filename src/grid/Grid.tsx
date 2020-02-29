@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { ObservableGridStateStore } from 'src/stores/grid-store';
+import { ObservableGridStateStore } from '../stores/grid-store';
 import './Grid.css';
-import { Pixel } from 'src/Pixel';
-import { GridEditMode } from 'src/models/grid-edit-mode';
+import { Pixel } from '../Pixel';
+import { GridEditMode } from '../models/grid-edit-mode';
 import { observer } from 'mobx-react';
 
 export interface IProps {

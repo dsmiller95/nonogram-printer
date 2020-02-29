@@ -1,6 +1,6 @@
 import Button from '@material-ui/core/Button';
 import * as React from 'react';
-import { NonogramKey } from 'src/models/nonogram-parameter';
+import { NonogramKey } from '../models/nonogram-parameter';
 import qrCode from '../assets/self-link-qr.png';
 import { addPaddingToGuides, GuideNumbers, nonogramKeyToGuideNumbers } from './guide-number-generator';
 import './Guide.css';

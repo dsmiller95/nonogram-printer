@@ -1,4 +1,4 @@
-import { NonogramKey } from 'src/models/nonogram-parameter';
+import { NonogramKey } from '../models/nonogram-parameter';
 export interface GuideNumbers{
     rows: number[][],
     cols: number[][]
