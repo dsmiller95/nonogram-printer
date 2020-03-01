@@ -1,32 +1,49 @@
 import { action, autorun, computed, observable } from "mobx";
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import { Pixel } from "src/Pixel";
 import { generateKey } from '../Guide/guide-number-generator';
 import { GridEditMode } from '../models/grid-edit-mode';
 import { NonogramCell } from '../models/nonogram-cell';
 import { NonogramKey, PartialNonogramSolution, SolvedNonogram } from '../models/nonogram-parameter';
 import { solveNonogram } from '../nonogram-solver/nonogram-solve';
-import { Pixel } from "src/Pixel";
-import { getLastItem } from '../utilities/utilities';
+import { getLastItemWithInterrupt } from '../utilities/utilities';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
     @observable partialGridSolve: Pixel[][];
-    @observable solution: SolvedNonogram = {
-        solutions: []
-    };
     @observable mode: GridEditMode = GridEditMode.EDIT;
     @observable partialSolution: PartialNonogramSolution | undefined;
 
+    @observable solution: SolvedNonogram = {
+        solutions: []
+    };
+    @observable computingSolution: boolean = false;
+
     constructor(){
-        const keyChangedSubject = new Subject<NonogramKey>();
-        autorun(() => {
-            keyChangedSubject.next(this.gridKey);
+        this.setupSolutionComputation();
+    }
+
+    private setupSolutionComputation(){
+        const keyChangeObservable = new Observable<NonogramKey>(subscriber => {
+            const disposer = autorun(() => {
+                if(subscriber.closed){
+                    disposer();
+                    return;
+                }
+                subscriber.next(this.gridKey);
+            });
         });
-        keyChangedSubject.pipe(
-            debounceTime(1000)
-        ).subscribe(key => {
-            this.computeSolution();
+
+        keyChangeObservable.pipe(
+            tap(() => {this.computingSolution = true}),
+            switchMap(key => {
+                return getLastItemWithInterrupt(solveNonogram(key), 30, 1)
+            })
+        ).subscribe(result => {
+            console.log(`solved: `, result);
+            this.computingSolution = false;
+            this.solution = result;
         });
     }
     
@@ -44,7 +61,7 @@ export class ObservableGridStateStore{
         if(this.mode === GridEditMode.EDIT){
             this.beginSolving();
         } else {
-            this.mode = GridEditMode.EDIT
+            this.mode = GridEditMode.EDIT;
         }
     }
 
@@ -52,10 +69,6 @@ export class ObservableGridStateStore{
         if(this.grid[row][column] !== value){
             this.grid[row][column] = value;
         }
-    }
-
-    @action computeSolution() {
-        this.solution = getLastItem(solveNonogram(this.gridKey));
     }
 
     private solutionGenerator: Generator<PartialNonogramSolution, SolvedNonogram, undefined>;
