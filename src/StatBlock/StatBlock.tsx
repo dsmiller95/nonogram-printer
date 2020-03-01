@@ -30,7 +30,7 @@ class StatBlock extends React.Component<IProps, IState> {
         }
         const isSolving = gridStore.mode === GridEditMode.SOLVE;
         return (
-            <Card className="StatBlock" variant="outlined">
+            <Card className="StatBlock no-print" variant="outlined">
                 <CardContent>
                     <div className="data-block">
                         <Typography className="data-label">Solutions: </Typography>

@@ -31,7 +31,7 @@ class App extends React.Component<object, State> {
           <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
         </div>
         <div 
-          className={"gridPanel" + 
+          className={"gridPanel no-print" + 
             (this.state.gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
             (this.state.gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
         >

@@ -46,7 +46,8 @@ class Guide extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <Button onClick={this.printStuff} variant="contained" color="primary">
+                <Button className="no-print"
+                    onClick={this.printStuff} variant="contained" color="primary">
                     Print
                 </Button>
                 <div className="Guide">

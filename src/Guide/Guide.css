@@ -8,6 +8,7 @@
   min-width: 40px;
   height: 40px;
   line-height: 40px;
+  text-align: center;
 }
 
 .Guide .row {
@@ -30,14 +31,13 @@
 }
 
 @media print {
+
   .Guide {
-    display: block;
-  } 
-  .Grid {
-    display: none;
+    display: block !important;
+    position: absolute;
   }
-  button {
-    display: none;
+  .no-print {
+    display: none !important;
   }
   .Guide .col {
     min-width: 0.75in;
