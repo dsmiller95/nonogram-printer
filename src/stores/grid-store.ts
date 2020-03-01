@@ -48,10 +48,10 @@ export class ObservableGridStateStore{
         }
     }
 
-    @action updatePixel(row: number, column: number){
-        this.grid[row][column] = this.grid[row][column] === Pixel.White ? Pixel.Black : Pixel.White;
-        //this.grid[row][column] = (this.grid[row][column]+1)%3;
-        this.grid = this.grid.map(x => x);
+    @action updatePixel(row: number, column: number, value: Pixel){
+        if(this.grid[row][column] !== value){
+            this.grid[row][column] = value;
+        }
     }
 
     @action computeSolution() {

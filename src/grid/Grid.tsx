@@ -20,6 +20,7 @@ class Grid extends React.Component<IProps, IState> {
     }
 
     private isDragging = false;
+    private dragValueChange: Pixel;
 
     public render() {
         const store = this.props.gridStore;
@@ -39,13 +40,15 @@ class Grid extends React.Component<IProps, IState> {
                                         (item === Pixel.White ? " white" : "") }
                                     onMouseEnter={() => {
                                         if(this.isDragging){
-                                            store.updatePixel(rowIndex, colIndex);
+                                            store.updatePixel(rowIndex, colIndex, this.dragValueChange);
                                         }
                                     }}
-                                    onMouseDown={() => {
+                                    onMouseDown={(event) => {
                                         if(!isEditable) return;
                                         this.isDragging = true;
-                                        store.updatePixel(rowIndex, colIndex);
+                                        this.dragValueChange = item === Pixel.White ? Pixel.Black : Pixel.White;
+                                        store.updatePixel(rowIndex, colIndex, this.dragValueChange);
+                                        event.preventDefault();
                                     }}
                                     onMouseUp={() => {
                                         this.isDragging = false;
