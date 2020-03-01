@@ -41,7 +41,6 @@ export class ObservableGridStateStore{
                 return getLastItemWithInterrupt(solveNonogram(key), 30, 1)
             })
         ).subscribe(result => {
-            console.log(`solved: `, result);
             this.computingSolution = false;
             this.solution = result;
         });
