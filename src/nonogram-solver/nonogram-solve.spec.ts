@@ -1,9 +1,9 @@
-import { solveNonogram, attemptToFurtherSolveSlice, generateAllPossibleSlicePermutations, slicePermutationGenerator, reduceMultiplePermutations, furtherSolveNonogramWithoutGuessing, checkSliceValidity } from './nonogram-solve';
-import { NonogramAction } from '../models/nonogram-parameter';
-import { NonogramGrid } from '../models/nonogram-grid';
-import { gridFromString, rowFromString } from './test-utilities';
-import { getLastItem } from '../utilities/utilities';
+import { NonogramAction } from 'src/models/nonogram-solve-steps';
 import { NonogramCell } from '../models/nonogram-cell';
+import { NonogramGrid } from '../models/nonogram-grid';
+import { getLastItem } from '../utilities/utilities';
+import { attemptToFurtherSolveSlice, checkSliceValidity, furtherSolveNonogramWithoutGuessing, generateAllPossibleSlicePermutations, reduceMultiplePermutations, slicePermutationGenerator, solveNonogram } from './nonogram-solve';
+import { gridFromString, rowFromString } from './test-utilities';
 
 describe('nonogram solver', () => {
     describe('when solving a whole grid', () => {

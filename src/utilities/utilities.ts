@@ -1,9 +1,43 @@
 import { Observable } from 'rxjs';
+import { NonogramKey, SolvedNonogram } from 'src/models/nonogram-parameter';
+import { tap, switchMap, map, first } from 'rxjs/operators';
+import { solveNonogram } from 'src/nonogram-solver/nonogram-solve';
+import { actionDifficultyRating, SolvedNonogramWithDifficulty } from 'src/models/nonogram-solve-steps';
 
 export function getLastItem<T>(iterator: Iterator<any, T, never>): T {
     let current: any;
     while(!(current = iterator.next()).done){};
     return current.value;
+}
+
+function tapIterator<T, TReturn>(iterator: Iterator<T, TReturn, never>, tap: (item: T) => void): Iterator<T, TReturn, never> {
+    const result = {
+        next: () => {
+            const nextValue = iterator.next();
+            if(!nextValue.done){
+                tap(nextValue.value);
+            }
+            return nextValue;
+        }
+    }
+    return result;
+}
+
+export function getGridSolutionSummaryObservable(keys: Observable<NonogramKey>): Observable<SolvedNonogramWithDifficulty> {
+    return keys.pipe(
+        switchMap(key => {
+            const nonogramSolveIterator = solveNonogram(key);
+            let nonogramComplexityRating = 0;
+            const wrappedIterator = tapIterator(nonogramSolveIterator, (action) => {
+                nonogramComplexityRating += actionDifficultyRating[action.lastAction.type];
+            });
+            return getLastItemWithInterrupt(wrappedIterator, 30, 1)
+                .pipe(
+                    first(),
+                    map(solved => ({solved, difficultyRating: nonogramComplexityRating}))
+                )
+        })
+    );
 }
 
 /**
@@ -14,7 +48,7 @@ export function getLastItem<T>(iterator: Iterator<any, T, never>): T {
  */
 export function getLastItemWithInterrupt<T>(iterator: Iterator<any, T, never>, interruptInterval: number, interruptPeriod: number): Observable<T> {
     let current: IteratorResult<any, T>;
-    if(interruptInterval <= interruptPeriod){
+    if(interruptInterval <= interruptPeriod) {
         throw "interruptPeriod must be less than the interval, otherwise no work gets done";
     }
     return new Observable((subscriber) => {

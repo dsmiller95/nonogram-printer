@@ -1,10 +1,10 @@
 import { Typography } from '@material-ui/core';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { EvaluateRowAction, NonogramAction, NonogramActionData, RewindAction } from '../models/nonogram-parameter';
 import { ObservableGridStateStore } from '../stores/grid-store';
 import './grid-solver-info.css';
 import { observer } from 'mobx-react';
+import { NonogramActionData, NonogramAction, EvaluateRowAction, RewindAction } from 'src/models/nonogram-solve-steps';
 
 export interface IProps {
     gridStore: ObservableGridStateStore

@@ -1,13 +1,14 @@
 import { action, autorun, computed, observable } from "mobx";
 import { Observable } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { PartialNonogramSolution } from 'src/models/nonogram-solve-steps';
 import { Pixel } from "src/Pixel";
 import { generateKey } from '../Guide/guide-number-generator';
 import { GridEditMode } from '../models/grid-edit-mode';
 import { NonogramCell } from '../models/nonogram-cell';
-import { NonogramKey, PartialNonogramSolution, SolvedNonogram } from '../models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram } from '../models/nonogram-parameter';
 import { solveNonogram } from '../nonogram-solver/nonogram-solve';
-import { getLastItemWithInterrupt } from '../utilities/utilities';
+import { getGridSolutionSummaryObservable } from '../utilities/utilities';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
@@ -18,6 +19,7 @@ export class ObservableGridStateStore{
     @observable solution: SolvedNonogram = {
         solutions: []
     };
+    @observable difficultyRating: number = 0;
     @observable computingSolution: boolean = false;
 
     constructor(){
@@ -35,15 +37,13 @@ export class ObservableGridStateStore{
             });
         });
 
-        keyChangeObservable.pipe(
-            tap(() => {this.computingSolution = true}),
-            switchMap(key => {
-                return getLastItemWithInterrupt(solveNonogram(key), 30, 1)
+        getGridSolutionSummaryObservable(
+            keyChangeObservable.pipe(tap(() => this.computingSolution = true))
+            ).subscribe(solution => {
+                this.computingSolution = false;
+                this.solution = solution.solved;
+                this.difficultyRating = solution.difficultyRating;
             })
-        ).subscribe(result => {
-            this.computingSolution = false;
-            this.solution = result;
-        });
     }
     
 	@computed get gridKey(): NonogramKey {

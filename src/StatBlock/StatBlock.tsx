@@ -62,6 +62,14 @@ class StatBlock extends React.Component<IProps, IState> {
                             </Typography>
                         )}
                     </div>
+                    <div className="data-block">
+                        <Typography className="data-label">Difficulty rating: </Typography>
+                        {maybeLoading(
+                            <Typography className="data-value">
+                                {gridStore.difficultyRating}
+                            </Typography>
+                        )}
+                    </div>
                 </CardContent>
                 <CardActions>
                     <Button size="small" variant="contained" color="default"
