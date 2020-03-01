@@ -26,6 +26,21 @@ class Grid extends React.Component<IProps, IState> {
         const store = this.props.gridStore;
         const isEditable = store.mode === GridEditMode.EDIT;
         const grid = isEditable ? store.grid : store.partialGridSolve;
+
+        const dragEnter = (row: number, col: number) => {
+            // console.log('dragEnter', row, col, this.isDragging);
+            if(this.isDragging){
+                store.updatePixel(row, col, this.dragValueChange);
+            }
+        };
+        const dragStart = (row: number, col: number, pixel: Pixel) => {
+            if(!isEditable) return;
+            this.isDragging = true;
+            this.dragValueChange = pixel === Pixel.White ? Pixel.Black : Pixel.White;
+            store.updatePixel(row, col, this.dragValueChange);
+            // console.log('drag start');
+            //event.preventDefault();
+        }
         return (
             <div className="gridContainer">
                 <div className="Grid">
@@ -39,16 +54,24 @@ class Grid extends React.Component<IProps, IState> {
                                         (item === Pixel.Unknown ? " unknown" : "") +
                                         (item === Pixel.White ? " white" : "") }
                                     onMouseEnter={() => {
-                                        if(this.isDragging){
-                                            store.updatePixel(rowIndex, colIndex, this.dragValueChange);
-                                        }
+                                        dragEnter(rowIndex, colIndex)
                                     }}
                                     onMouseDown={(event) => {
-                                        if(!isEditable) return;
-                                        this.isDragging = true;
-                                        this.dragValueChange = item === Pixel.White ? Pixel.Black : Pixel.White;
-                                        store.updatePixel(rowIndex, colIndex, this.dragValueChange);
+                                        dragStart(rowIndex, colIndex, item);
                                         event.preventDefault();
+                                    }}
+                                    onTouchStart={(event) => {
+                                        dragStart(rowIndex, colIndex, item);
+                                    }}
+                                    onTouchMove={(event) => {
+                                        // bad hack, pls change
+                                        const newEvent = new MouseEvent('mouseover',{
+                                            view: window,
+                                            bubbles: true,
+                                            cancelable: true
+                                          });
+                                        const element = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
+                                        element?.dispatchEvent(newEvent);
                                     }}
                                     onMouseUp={() => {
                                         this.isDragging = false;
