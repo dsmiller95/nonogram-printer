@@ -26,7 +26,11 @@ class Grid extends React.Component<IProps, IState> {
 
     componentDidMount(){
         this.gridRef.addEventListener('touchmove', (event) => {
+            if(event.touches.length > 1){
+                return;
+            }
             // bad hack, pls change
+            //  I'm warming up to the hack now...
             const newEvent = new MouseEvent('mouseover',{
                 view: window,
                 bubbles: true,
@@ -40,8 +44,14 @@ class Grid extends React.Component<IProps, IState> {
             passive: false,
             capture: true
         });
-        this.gridRef.addEventListener('touchend', () => {this.isDragging = false});
-        this.gridRef.addEventListener('touchcancel', () => {this.isDragging = false});
+        this.gridRef.addEventListener('touchend', (event) => {
+            this.isDragging = false;
+            // prevent a click event (mousedown) from being generated
+            event.preventDefault();
+        });
+        this.gridRef.addEventListener('touchcancel', () => {
+            this.isDragging = false;
+        });
     }
 
     public render() {
@@ -50,7 +60,6 @@ class Grid extends React.Component<IProps, IState> {
         const grid = isEditable ? store.grid : store.partialGridSolve;
 
         const dragEnter = (row: number, col: number) => {
-            // console.log('dragEnter', row, col, this.isDragging);
             if(this.isDragging){
                 store.updatePixel(row, col, this.dragValueChange);
             }
