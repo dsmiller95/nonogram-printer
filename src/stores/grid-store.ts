@@ -9,6 +9,8 @@ import { NonogramCell } from '../models/nonogram-cell';
 import { NonogramKey, SolvedNonogram } from '../models/nonogram-parameter';
 import { solveNonogram } from '../nonogram-solver/nonogram-solve';
 import { getGridSolutionSummaryObservable } from '../utilities/utilities';
+import { selectGenerator } from 'src/utilities/linq-utilities';
+import { NonogramGrid } from 'src/models/nonogram-grid';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
@@ -56,6 +58,22 @@ export class ObservableGridStateStore{
         return generateKey(this.grid.map(x => x.map(pix => pix === Pixel.Black)));
     }
 
+    @computed get aggregateSolutionGrid(): Pixel[][] | undefined {
+        if(this.computingSolution || !this.solution?.solutions?.[0]){
+            return undefined;
+        }
+
+        const solutions = this.solution.solutions.map(solution => this.nonogramGridToPixelGrid(solution.solution));
+
+        const result: Pixel[][] = new Array(solutions[0].length)
+            .fill(new Array(solutions[0][0].length).fill(undefined));
+        return result.map((row, firstIndex) => row.map((pix, secondIndex) => {
+            return solutions
+                .map(solution => solution[firstIndex][secondIndex])
+                .reduce((aggregate, current) => current === aggregate ? current : Pixel.Unknown)
+        }));
+    }
+
     @action switchMode(){
         if(this.mode === GridEditMode.EDIT){
             this.beginSolving();
@@ -80,7 +98,11 @@ export class ObservableGridStateStore{
             return;
         }
         this.partialSolution = nextStep.value;
-        this.partialGridSolve = this.partialSolution.partialSolution.gridData.map(row => 
+        this.partialGridSolve = this.nonogramGridToPixelGrid(this.partialSolution.partialSolution);
+    }
+
+    private nonogramGridToPixelGrid(nonogram: NonogramGrid): Pixel[][] {
+        return nonogram.gridData.map(row => 
             row.map(cell => this.nonogramCellToPixel(cell)));
     }
 

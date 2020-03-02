@@ -29,6 +29,9 @@
     border: 1px solid black;
     flex-grow: 1;
   }
+  .col.uncertain {
+    opacity: 0.8;
+  }
   .col.black {
     background-color: black;
   }

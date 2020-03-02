@@ -52,10 +52,29 @@ class Grid extends React.Component<IProps, IState> {
         });
     }
 
+    private pixelToColor(pix: Pixel): string {
+        switch(pix){
+            case Pixel.Black:
+                return 'black';
+            case Pixel.White:
+                return 'white';
+            case Pixel.Unknown:
+                return 'unknown';
+        }
+    }
+
     public render() {
         const store = this.props.gridStore;
         const isEditable = store.mode === GridEditMode.EDIT;
         const grid = isEditable ? store.grid : store.partialGridSolve;
+        const solutionGrid = store.aggregateSolutionGrid;
+
+        const colorClassForPosition = (row: number, col: number): string => {
+            const pixelValue = grid[row][col];
+            const solutionValue = (isEditable && (solutionGrid !== undefined)) ? solutionGrid[row][col] : pixelValue;
+            let baseColor = this.pixelToColor(pixelValue);
+            return baseColor + ((solutionValue !== pixelValue) ? ' uncertain' : '');
+        };
 
         const dragEnter = (row: number, col: number) => {
             if(this.isDragging){
@@ -76,10 +95,7 @@ class Grid extends React.Component<IProps, IState> {
                             {row.map((item, colIndex) => 
                                 <div
                                     key={colIndex}
-                                    className={"col" +
-                                        (item === Pixel.Black ? " black" : "") +
-                                        (item === Pixel.Unknown ? " unknown" : "") +
-                                        (item === Pixel.White ? " white" : "") }
+                                    className={"col " + colorClassForPosition(rowIndex, colIndex) }
                                     onMouseEnter={() => {
                                         dragEnter(rowIndex, colIndex)
                                     }}
