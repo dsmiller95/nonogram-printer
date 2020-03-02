@@ -35,6 +35,7 @@ class Grid extends React.Component<IProps, IState> {
         };
         const dragStart = (row: number, col: number, pixel: Pixel) => {
             if(!isEditable) return;
+            if(this.isDragging) return;
             this.isDragging = true;
             this.dragValueChange = pixel === Pixel.White ? Pixel.Black : Pixel.White;
             store.updatePixel(row, col, this.dragValueChange);
@@ -54,16 +55,20 @@ class Grid extends React.Component<IProps, IState> {
                                         (item === Pixel.Unknown ? " unknown" : "") +
                                         (item === Pixel.White ? " white" : "") }
                                     onMouseEnter={() => {
+                                        console.log('onMouseEnter');
                                         dragEnter(rowIndex, colIndex)
                                     }}
                                     onMouseDown={(event) => {
+                                        console.log('onMouseDown');
                                         dragStart(rowIndex, colIndex, item);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {
+                                        console.log('onTouchStart');
                                         dragStart(rowIndex, colIndex, item);
                                     }}
                                     onTouchMove={(event) => {
+                                        console.log('onTouchMove');
                                         // bad hack, pls change
                                         const newEvent = new MouseEvent('mouseover',{
                                             view: window,
@@ -72,6 +77,8 @@ class Grid extends React.Component<IProps, IState> {
                                           });
                                         const element = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
                                         element?.dispatchEvent(newEvent);
+                                        event.stopPropagation();
+                                        event.preventDefault();
                                     }}
                                     onMouseUp={() => {
                                         this.isDragging = false;
