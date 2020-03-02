@@ -46,8 +46,6 @@ class Grid extends React.Component<IProps, IState> {
         });
         this.gridRef.addEventListener('touchend', (event) => {
             this.isDragging = false;
-            // prevent a click event (mousedown) from being generated
-            event.preventDefault();
         });
         this.gridRef.addEventListener('touchcancel', () => {
             this.isDragging = false;
@@ -69,7 +67,6 @@ class Grid extends React.Component<IProps, IState> {
             if(this.isDragging) return;
             this.isDragging = true;
             this.dragValueChange = pixel === Pixel.White ? Pixel.Black : Pixel.White;
-            store.updatePixel(row, col, this.dragValueChange);
         } 
         return (
             <div className="gridContainer">
@@ -88,6 +85,7 @@ class Grid extends React.Component<IProps, IState> {
                                     }}
                                     onMouseDown={(event) => {
                                         dragStart(rowIndex, colIndex, item);
+                                        store.updatePixel(rowIndex, colIndex, this.dragValueChange);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {
