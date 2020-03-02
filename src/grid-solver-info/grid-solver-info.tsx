@@ -39,12 +39,12 @@ class GridSolverInfo extends React.Component<IProps, IState> {
 
         const isSolving = this.props.gridStore.mode === GridEditMode.SOLVE;
         if(!isSolving){
-            return <span>
+            return <span className='grid-panel-header'>
                 <Typography>Edit</Typography>
             </span>
         }
         return (
-            <span>
+            <span className='grid-panel-header'>
                 <Typography>Solving.  {actionToMessage(this.props.gridStore.partialSolution?.lastAction)}</Typography>
             </span>
         );

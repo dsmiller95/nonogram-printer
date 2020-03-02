@@ -30,7 +30,7 @@ class Grid extends React.Component<IProps, IState> {
                 return;
             }
             // bad hack, pls change
-            //  I'm warming up to the hack now...
+            //  I'm warming up to the hack though...
             const newEvent = new MouseEvent('mouseover',{
                 view: window,
                 bubbles: true,
@@ -44,7 +44,7 @@ class Grid extends React.Component<IProps, IState> {
             passive: false,
             capture: true
         });
-        this.gridRef.addEventListener('touchend', (event) => {
+        this.gridRef.addEventListener('touchend', () => {
             this.isDragging = false;
         });
         this.gridRef.addEventListener('touchcancel', () => {
@@ -62,7 +62,7 @@ class Grid extends React.Component<IProps, IState> {
                 store.updatePixel(row, col, this.dragValueChange);
             }
         };
-        const dragStart = (row: number, col: number, pixel: Pixel) => {
+        const dragStart = (pixel: Pixel) => {
             if(!isEditable) return;
             if(this.isDragging) return;
             this.isDragging = true;
@@ -84,12 +84,12 @@ class Grid extends React.Component<IProps, IState> {
                                         dragEnter(rowIndex, colIndex)
                                     }}
                                     onMouseDown={(event) => {
-                                        dragStart(rowIndex, colIndex, item);
+                                        dragStart(item);
                                         store.updatePixel(rowIndex, colIndex, this.dragValueChange);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {
-                                        dragStart(rowIndex, colIndex, item);
+                                        dragStart(item);
                                     }}
                                     onMouseUp={() => {
                                         this.isDragging = false;

@@ -19,10 +19,16 @@
 }
 
 .grid-panel-editing {
-  background-color: aqua;
+  background-color: cyan;
+  border: darkcyan 1px solid;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px 1px darkcyan;
 }
 .grid-panel-solving {
   background-color: salmon;
+  border: darksalmon 1px solid;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px 1px darksalmon;
 }
 
 .grid-container-padding {
