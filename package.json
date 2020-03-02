@@ -17,9 +17,12 @@
     "tslib": "^1.11.0"
   },
   "scripts": {
+    "build:css": "node-sass src/ -o src/ ",
+    "watch:css": "npm run build:css && node-sass src/ -o src/ -w -r",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "react-scripts-ts start",
+    "start:ts": "react-scripts-ts start",
+    "start": "npm-run-all -p watch:css start:ts",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
@@ -28,8 +31,11 @@
     "@types/jest": "^23.3.10",
     "@types/md5": "^2.1.33",
     "@types/node": "^13.7.4",
+    "@types/node-sass": "^4.11.0",
     "@types/react": "^16.9.5",
     "@types/react-dom": "^16.9.1",
+    "node-sass": "^4.13.1",
+    "npm-run-all": "^4.1.5",
     "typescript": "^3.8.2"
   }
 }

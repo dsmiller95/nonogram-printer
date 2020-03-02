@@ -1,0 +1,17 @@
+.StatBlock {
+  margin: 10px;
+
+  .data-block {
+    width: 100%;
+    padding: 3px;
+    display: flex;
+    justify-content: space-between;
+    /*border: 1px solid black;*/
+    .data-label {
+      display: inline-block;
+    }
+    .data-value {
+      display: inline-block;
+    }
+  }
+}

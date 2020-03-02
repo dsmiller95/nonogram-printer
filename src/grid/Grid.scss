@@ -19,25 +19,23 @@
   background-size: 1.786% 1.786%;
   background-position: 0 0, 0 0.893%, 0.893% -0.893%, -0.893% 0px;
   background-color: white;
-}
 
-.Grid .col.black {
-  background-color: black;
-}
-.Grid .col.unknown {
-  border: 1px solid white;
-}
-.Grid .col.white {
-  background-color: white;
-}
-
-.Grid .row {
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-}
-
-.Grid .col {
-  border: 1px solid black;
-  flex-grow: 1;
+  .row {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+  }
+  .col {
+    border: 1px solid black;
+    flex-grow: 1;
+  }
+  .col.black {
+    background-color: black;
+  }
+  .col.unknown {
+    border: 1px solid white;
+  }
+  .col.white {
+    background-color: white;
+  }
 }

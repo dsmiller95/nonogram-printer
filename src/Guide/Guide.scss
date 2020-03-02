@@ -1,0 +1,59 @@
+.Guide {
+  display: none;
+
+  .col {
+    border: 1px solid black;
+    display: inline-block;
+    min-width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+  }
+  
+  .row {
+    vertical-align: top;
+    min-height: 40px;
+    display: inline-grid;
+  }
+
+  .rows .col {
+    transform: rotate(90deg);
+  }
+  .divider {
+    display: block;
+    min-height: 20px;
+  }
+  
+  .qr-code {
+    display: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .Guide {
+    display: block !important;
+    position: absolute;
+
+    .col {
+      min-width: 0.75in;
+      height: 0.75in;
+      line-height: 0.75in;
+      font-size: 0.5in;
+    }
+    .row {
+      min-height: 0.75in;
+    }
+    .divider {
+      display: inline-block;
+      min-width: 0.5in;
+    }
+    .qr-code {
+      display: inline-block;
+      height: 0.7in;
+      width: 0.7in;
+    }
+  }
+}
