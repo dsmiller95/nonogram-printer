@@ -1,6 +1,8 @@
 $primary-color: #706c61;
-$primary-color-dark: rgba($primary-color, 0.88);
+$primary-color-dark: darken($primary-color, 20%);
+$primary-color-light: lighten($primary-color, 20%);
 $secondary-color: #e1f4f3;
-$secondary-color-dark: rgba($primary-color, 0.88);
+$secondary-color-dark: darken($secondary-color, 10%);
+$secondary-color-light: lighten($secondary-color, 10%);
 $main-color: #333333;
 $mute-color: #ffffff;
