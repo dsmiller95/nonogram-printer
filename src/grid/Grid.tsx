@@ -22,6 +22,28 @@ class Grid extends React.Component<IProps, IState> {
     private isDragging = false;
     private dragValueChange: Pixel;
 
+    private gridRef: HTMLDivElement;
+
+    componentDidMount(){
+        this.gridRef.addEventListener('touchmove', (event) => {
+            // bad hack, pls change
+            const newEvent = new MouseEvent('mouseover',{
+                view: window,
+                bubbles: true,
+                cancelable: true
+              });
+            const element = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
+            element?.dispatchEvent(newEvent);
+            event.stopPropagation();
+            event.preventDefault();
+        }, {
+            passive: false,
+            capture: true
+        });
+        this.gridRef.addEventListener('touchend', () => {this.isDragging = false});
+        this.gridRef.addEventListener('touchcancel', () => {this.isDragging = false});
+    }
+
     public render() {
         const store = this.props.gridStore;
         const isEditable = store.mode === GridEditMode.EDIT;
@@ -39,12 +61,10 @@ class Grid extends React.Component<IProps, IState> {
             this.isDragging = true;
             this.dragValueChange = pixel === Pixel.White ? Pixel.Black : Pixel.White;
             store.updatePixel(row, col, this.dragValueChange);
-            // console.log('drag start');
-            //event.preventDefault();
-        }
+        } 
         return (
             <div className="gridContainer">
-                <div className="Grid">
+                <div className="Grid" ref={ref => ref && (this.gridRef = ref)}>
                     {grid.map((row, rowIndex) => 
                         <div key={rowIndex} className="row">
                             {row.map((item, colIndex) => 
@@ -55,30 +75,14 @@ class Grid extends React.Component<IProps, IState> {
                                         (item === Pixel.Unknown ? " unknown" : "") +
                                         (item === Pixel.White ? " white" : "") }
                                     onMouseEnter={() => {
-                                        console.log('onMouseEnter');
                                         dragEnter(rowIndex, colIndex)
                                     }}
                                     onMouseDown={(event) => {
-                                        console.log('onMouseDown');
                                         dragStart(rowIndex, colIndex, item);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {
-                                        console.log('onTouchStart');
                                         dragStart(rowIndex, colIndex, item);
-                                    }}
-                                    onTouchMove={(event) => {
-                                        console.log('onTouchMove');
-                                        // bad hack, pls change
-                                        const newEvent = new MouseEvent('mouseover',{
-                                            view: window,
-                                            bubbles: true,
-                                            cancelable: true
-                                          });
-                                        const element = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
-                                        element?.dispatchEvent(newEvent);
-                                        event.stopPropagation();
-                                        event.preventDefault();
                                     }}
                                     onMouseUp={() => {
                                         this.isDragging = false;
