@@ -11,6 +11,9 @@ import { solveNonogram } from '../nonogram-solver/nonogram-solve';
 import { getGridSolutionSummaryObservable } from '../utilities/utilities';
 import { selectGenerator } from 'src/utilities/linq-utilities';
 import { NonogramGrid } from 'src/models/nonogram-grid';
+import { getQueryParam, setQueryParam } from './window-query-param-accessor';
+import { deserializeGrid, serializeGrid } from './grid-serializer';
+import { refStructEnhancer } from 'mobx/lib/internal';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
@@ -26,6 +29,15 @@ export class ObservableGridStateStore{
 
     constructor(){
         this.setupSolutionComputation();
+        this.setupGridQueryParamUpdater();
+    }
+
+    private setupGridQueryParamUpdater() {
+        const disposer = autorun(() => {
+            if(!this.grid) return;
+            const serialized = serializeGrid(this.grid);
+            setQueryParam('grid', serialized);
+        });
     }
 
     private setupSolutionComputation(){
@@ -129,7 +141,18 @@ export class ObservableGridStateStore{
         this.partialGridSolve = newPartialSolution;
     }
 
-    @action instantiateGrid(width: number, height: number){
+    @action instantiateGrid(width: number, height: number) {
+        const queryGridData = getQueryParam('grid');
+        if(queryGridData && queryGridData.length > 0) {
+            try {
+                const newGrid = deserializeGrid(queryGridData);
+                this.grid = newGrid;
+                return;
+            } catch (e){
+                console.error('problem deserializing grid from query parameters, creating blank grid');
+                console.error(e);
+            }
+        }
         let grid: Pixel[][] = [];
         for(let i = 0; i < width; i++){
             let col: Pixel[] = [];
