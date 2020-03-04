@@ -12,6 +12,7 @@ import { solveNonogram } from '../nonogram-solver/nonogram-solve';
 import { getGridSolutionSummaryObservable } from '../utilities/utilities';
 import { attemptDeserializeGrid, serializedKeys, serializeGrid } from './grid-serializer';
 import { getQueryParams, setQueryParams } from './window-query-param-accessor';
+import { overwriteFavicon } from './window-favicon-manager';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
@@ -36,6 +37,7 @@ export class ObservableGridStateStore{
                 if(!grid) return;
                 const serialized = serializeGrid(grid);
                 setQueryParams(serialized);
+                overwriteFavicon(grid);
             }, {
                 delay: 1000
             });
