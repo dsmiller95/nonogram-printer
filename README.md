@@ -8,6 +8,8 @@ If you can design a nonogram which the solver can't handle, please grab a screen
 
 While in edit mode, the sidebar will display a summary of some difficulty metrics of the puzzle based on an attempt to solve it. You'll be able to see how many solutions there are to the puzzle, and a summary of the number of guesses required to get to each solution. The summary updates will be debounced because sometimes the solver can take significant time and lock the UI; while the solver is working the difficulty rating numbers will show loading animations.
 
+The difficulty rating is based off of how many steps it takes to reach each solution; on average
+
 When a cell shows a slightly checkered background, that means that there are multiple solutions and that individual cell has different values in the resulting possible solutions.
 
 The URL will update when you edit the puzzle, and if you share the full url then anyone else can use that to load the same puzzle that you designed!

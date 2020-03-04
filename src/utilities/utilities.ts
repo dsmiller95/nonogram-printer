@@ -34,7 +34,7 @@ export function getGridSolutionSummaryObservable(keys: Observable<NonogramKey>):
             return getLastItemWithInterrupt(wrappedIterator, 30, 1)
                 .pipe(
                     first(),
-                    map(solved => ({solved, difficultyRating: nonogramComplexityRating}))
+                    map(solved => ({solved, difficultyRating: Math.ceil(nonogramComplexityRating / solved.solutions.length)}))
                 )
         })
     );
