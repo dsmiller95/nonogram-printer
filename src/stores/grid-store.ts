@@ -1,6 +1,7 @@
-import { action, autorun, computed, observable } from "mobx";
+import { action, autorun, computed, observable, reaction } from "mobx";
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { NonogramGrid } from 'src/models/nonogram-grid';
 import { PartialNonogramSolution } from 'src/models/nonogram-solve-steps';
 import { Pixel } from "src/Pixel";
 import { generateKey } from '../Guide/guide-number-generator';
@@ -9,12 +10,8 @@ import { NonogramCell } from '../models/nonogram-cell';
 import { NonogramKey, SolvedNonogram } from '../models/nonogram-parameter';
 import { solveNonogram } from '../nonogram-solver/nonogram-solve';
 import { getGridSolutionSummaryObservable } from '../utilities/utilities';
-import { selectGenerator } from 'src/utilities/linq-utilities';
-import { NonogramGrid } from 'src/models/nonogram-grid';
-import { getQueryParam, setQueryParam, setQueryParams, getQueryParams } from './window-query-param-accessor';
-import { attemptDeserializeGrid, serializeGrid, serializedKeys } from './grid-serializer';
-import { refStructEnhancer } from 'mobx/lib/internal';
-import { deserialize } from 'v8';
+import { attemptDeserializeGrid, serializedKeys, serializeGrid } from './grid-serializer';
+import { getQueryParams, setQueryParams } from './window-query-param-accessor';
 
 export class ObservableGridStateStore{
     @observable grid: Pixel[][];
@@ -34,11 +31,14 @@ export class ObservableGridStateStore{
     }
 
     private setupGridQueryParamUpdater() {
-        const disposer = autorun(() => {
-            if(!this.grid) return;
-            const serialized = serializeGrid(this.grid);
-            setQueryParams(serialized);
-        });
+        reaction(() => this.grid, 
+            (grid, reaction) => {
+                if(!grid) return;
+                const serialized = serializeGrid(grid);
+                setQueryParams(serialized);
+            }, {
+                delay: 1000
+            });
     }
 
     private setupSolutionComputation(){
@@ -98,6 +98,7 @@ export class ObservableGridStateStore{
     @action updatePixel(row: number, column: number, value: Pixel){
         if(this.grid[row][column] !== value){
             this.grid[row][column] = value;
+            this.grid = [...this.grid];
         }
     }
 
