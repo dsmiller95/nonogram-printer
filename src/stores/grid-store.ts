@@ -77,8 +77,7 @@ export class ObservableGridStateStore{
         }
 
         const solutions = this.solution.solutions.map(solution => this.nonogramGridToPixelGrid(solution.solution));
-        if(solutions[0].length <= 0 || solutions[0][0].length <= 0){
-            console.log('solutions')
+        if(solutions[0].length <= 0 || solutions[0][0].length <= 0) {
             return undefined;
         }
 
