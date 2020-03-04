@@ -72,11 +72,15 @@ export class ObservableGridStateStore{
     }
 
     @computed get aggregateSolutionGrid(): Pixel[][] | undefined {
-        if(this.computingSolution || !this.solution?.solutions?.[0]?.[0]){
+        if(this.computingSolution || !this.solution?.solutions?.[0]){
             return undefined;
         }
 
         const solutions = this.solution.solutions.map(solution => this.nonogramGridToPixelGrid(solution.solution));
+        if(solutions[0].length <= 0 || solutions[0][0].length <= 0){
+            console.log('solutions')
+            return undefined;
+        }
 
         const result: Pixel[][] = new Array(solutions[0].length)
             .fill(new Array(solutions[0][0].length).fill(undefined));
