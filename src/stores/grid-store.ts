@@ -72,7 +72,7 @@ export class ObservableGridStateStore{
     }
 
     @computed get aggregateSolutionGrid(): Pixel[][] | undefined {
-        if(this.computingSolution || !this.solution?.solutions?.[0]){
+        if(this.computingSolution || !this.solution?.solutions?.[0]?.[0]){
             return undefined;
         }
 
