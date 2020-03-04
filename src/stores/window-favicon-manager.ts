@@ -2,12 +2,13 @@ import { Pixel } from "../Pixel";
 
 export function overwriteFavicon(pixels: Pixel[][]): void {
     var canvas = document.createElement('canvas');
-        canvas.width = 16;canvas.height = 16;
+        canvas.width = pixels.length;
+        canvas.height = pixels[0].length;
     var ctx = canvas.getContext('2d');
     if(!ctx) return;
 
     ctx.fillStyle = "#FFF";
-    ctx.fillRect(0, 0, 16, 16);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     for(let columnIndex = 0; columnIndex < pixels.length; columnIndex++){
         for(let rowIndex = 0; rowIndex < pixels[columnIndex].length; rowIndex++){
