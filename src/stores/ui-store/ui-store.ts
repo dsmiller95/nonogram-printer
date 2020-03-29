@@ -12,7 +12,7 @@ export class UIStore {
     @action switchMode(){
         if(this.mode === GridEditMode.EDIT){
             this.mode = GridEditMode.SOLVE;
-            this.rootStore.gridStore.beginSolving();
+            this.rootStore.gridSolverStore.beginSolving();
         } else {
             this.mode = GridEditMode.EDIT;
         }

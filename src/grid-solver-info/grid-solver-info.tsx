@@ -1,15 +1,14 @@
 import { Typography } from '@material-ui/core';
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { GridStore } from '../stores/grid-store/grid-store';
-import './grid-solver-info.css';
-import { observer } from 'mobx-react';
-import { NonogramActionData, NonogramAction, EvaluateRowAction, RewindAction } from '../models/nonogram-solve-steps';
-import { RootStore } from '../stores/root-store/root-store';
+import { EvaluateRowAction, NonogramAction, NonogramActionData, RewindAction } from '../models/nonogram-solve-steps';
+import { GridSolverStore } from '../stores/grid-solver-store/grid-solver-store';
 import { UIStore } from '../stores/ui-store/ui-store';
+import './grid-solver-info.css';
 
 export interface IProps {
-    gridStore: GridStore;
+    gridSolverStore: GridSolverStore;
     uiStore: UIStore;
 }
 
@@ -48,7 +47,7 @@ class GridSolverInfo extends React.Component<IProps, IState> {
         }
         return (
             <span className='grid-panel-header'>
-                <Typography>Solving.  {actionToMessage(this.props.gridStore.partialSolution?.lastAction)}</Typography>
+                <Typography>Solving.  {actionToMessage(this.props.gridSolverStore.partialSolution?.lastAction)}</Typography>
             </span>
         );
     }

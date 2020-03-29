@@ -9,6 +9,11 @@ import { GridEditMode } from './models/grid-edit-mode';
 import StatBlock from './StatBlock/StatBlock';
 import { GridStore } from './stores/grid-store/grid-store';
 import { RootStore } from './stores/root-store/root-store';
+import { reaction } from 'mobx';
+import { serializeGrid, serializedKeys, attemptDeserializeGrid } from './stores/grid-serializer';
+import { setQueryParams, getQueryParams } from './stores/window-query-param-accessor';
+import { overwriteFavicon } from './stores/window-favicon-manager';
+import { Pixel } from './Pixel';
 
 interface State {
   rootStore: RootStore;
@@ -35,27 +40,59 @@ class App extends React.Component<object, State> {
     this.state = {
       rootStore: new RootStore()
     };
-    this.state.rootStore.gridStore.instantiateGrid(16, 16);
+    this.state.rootStore.editableGrid.instantiateGrid(App.generateGirdFromURLOrDefault());
+    this.setupGridQueryParamUpdater(this.state.rootStore.editableGrid);
+  }
+  
+  private setupGridQueryParamUpdater(gridStore: GridStore) {
+      reaction(() => gridStore.grid, 
+          (grid, reaction) => {
+              if(!grid) return;
+              const serialized = serializeGrid(grid);
+              setQueryParams(serialized);
+              overwriteFavicon(grid);
+          }, {
+              delay: 1000
+          });
+  }
+
+  private static generateGirdFromURLOrDefault(): Pixel[][] {
+    const queryGridData = getQueryParams(...serializedKeys);
+    const deserialized = attemptDeserializeGrid(queryGridData);
+    if(deserialized){
+        return deserialized;
+    }
+    const width = 16, height = 16;
+    let grid: Pixel[][] = [];
+    for(let i = 0; i < width; i++){
+        let col: Pixel[] = [];
+        for (let j = 0; j < height; j++) {
+            col.push(Pixel.White);
+        }
+        grid.push(col);
+    }
+    return grid;
   }
 
   public render() {
-    const gridStore = this.state.rootStore.gridStore;
+    const editableGridStore = this.state.rootStore.editableGrid;
+    const gridSolverStore = this.state.rootStore.gridSolverStore;
     const uiStore = this.state.rootStore.uiStore;
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
           <div className="sidePanel">
-            <StatBlock gridStore={gridStore} uiStore={ uiStore }></StatBlock>
-            <Guide nonogramKey={gridStore.gridKey}></Guide>
+            <StatBlock gridSolverStore={gridSolverStore} uiStore={ uiStore }></StatBlock>
+            <Guide nonogramKey={editableGridStore.gridKey}></Guide>
           </div>
           <div 
             className={"gridPanel no-print" + 
               (uiStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
               (uiStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
           >
-            <GridSolverInfo gridStore={ gridStore } uiStore={ uiStore }></GridSolverInfo>
+            <GridSolverInfo gridSolverStore={ gridSolverStore } uiStore={ uiStore }></GridSolverInfo>
             <div className="grid-container-padding">
-              <Grid gridStore={ gridStore } uiStore={ uiStore }/>
+              <Grid gridSolverStore={ gridSolverStore } gridStore={ editableGridStore } uiStore={ uiStore }/>
             </div>
           </div>
         </div>

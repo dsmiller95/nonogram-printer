@@ -5,9 +5,11 @@ import { Pixel } from '../Pixel';
 import { GridEditMode } from '../models/grid-edit-mode';
 import { observer } from 'mobx-react';
 import { UIStore } from '../stores/ui-store/ui-store';
+import { GridSolverStore } from '../stores/grid-solver-store/grid-solver-store';
 
 export interface IProps {
     gridStore: GridStore;
+    gridSolverStore: GridSolverStore;
     uiStore: UIStore;
 }
 
@@ -66,10 +68,11 @@ class Grid extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const store = this.props.gridStore;
+        const gridStore = this.props.gridStore;
+        const gridSolverStore = this.props.gridSolverStore;
         const isEditable = this.props.uiStore.mode === GridEditMode.EDIT;
-        const grid = isEditable ? store.grid : store.partialGridSolve;
-        const solutionGrid = store.aggregateSolutionGrid;
+        const grid = isEditable ? gridStore.grid : gridSolverStore.partialGridSolve;
+        const solutionGrid = gridSolverStore.aggregateSolutionGrid;
 
         const colorClassForPosition = (row: number, col: number): string => {
             const pixelValue = grid[row][col];
@@ -80,7 +83,7 @@ class Grid extends React.Component<IProps, IState> {
 
         const dragEnter = (row: number, col: number) => {
             if(this.isDragging){
-                store.updatePixel(row, col, this.dragValueChange);
+                gridStore.updatePixel(row, col, this.dragValueChange);
             }
         };
         const dragStart = (pixel: Pixel) => {
@@ -103,7 +106,7 @@ class Grid extends React.Component<IProps, IState> {
                                     }}
                                     onMouseDown={(event) => {
                                         dragStart(item);
-                                        store.updatePixel(rowIndex, colIndex, this.dragValueChange);
+                                        gridStore.updatePixel(rowIndex, colIndex, this.dragValueChange);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {

@@ -1,15 +1,14 @@
-import { Button, Card, CardActions, CardContent, CircularProgress, Typography, makeStyles, withStyles, Theme, createStyles } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, CircularProgress, createStyles, Theme, Typography, withStyles } from '@material-ui/core';
+import { WithStyles } from '@material-ui/core/styles/withStyles';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { GridStore } from '../stores/grid-store/grid-store';
-import './StatBlock.css';
-import { pathToFileURL } from 'url';
-import { Styles, WithStyles } from '@material-ui/core/styles/withStyles';
+import { GridSolverStore } from '../stores/grid-solver-store/grid-solver-store';
 import { UIStore } from '../stores/ui-store/ui-store';
+import './StatBlock.css';
 
 export interface IProps extends WithStyles<typeof styles> {
-    gridStore: GridStore;
+    gridSolverStore: GridSolverStore;
     uiStore: UIStore;
 }
 
@@ -36,18 +35,18 @@ class StatBlock extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const gridStore = this.props.gridStore;
+        const gridSolverStore = this.props.gridSolverStore;
         const uiStore = this.props.uiStore;
-        const solutions = gridStore.solution.solutions;
+        const solutions = gridSolverStore.solution.solutions;
         const switchMode = () => {
             uiStore.switchMode();
         }
         const stepSolve = () => {
-            gridStore.nextSolutionStep();
+            gridSolverStore.nextSolutionStep();
         }
 
         const maybeLoading = (source: JSX.Element) => {
-            if(gridStore.computingSolution)
+            if(gridSolverStore.computingSolution)
                 return <CircularProgress size={20} />;
             return source;
         }
@@ -83,7 +82,7 @@ class StatBlock extends React.Component<IProps, IState> {
                         <Typography className="data-label">Difficulty rating: </Typography>
                         {maybeLoading(
                             <Typography className="data-value">
-                                {gridStore.difficultyRating}
+                                {gridSolverStore.difficultyRating}
                             </Typography>
                         )}
                     </div>
