@@ -7,10 +7,11 @@ import Grid from './grid/Grid';
 import Guide from './Guide/Guide';
 import { GridEditMode } from './models/grid-edit-mode';
 import StatBlock from './StatBlock/StatBlock';
-import { ObservableGridStateStore } from './stores/grid-store';
+import { GridStore } from './stores/grid-store';
+import { RootStore } from './stores/root-store/root-store';
 
 interface State {
-  gridStore: ObservableGridStateStore;
+  rootStore: RootStore;
 }
 
 const theme = createMuiTheme({
@@ -32,27 +33,28 @@ class App extends React.Component<object, State> {
   constructor(props: object){
     super(props);
     this.state = {
-      gridStore: new ObservableGridStateStore()
+      rootStore: new RootStore()
     };
-    this.state.gridStore.instantiateGrid(16, 16);
+    this.state.rootStore.gridStore.instantiateGrid(16, 16);
   }
 
   public render() {
+    const gridStore = this.state.rootStore.gridStore;
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
           <div className="sidePanel">
-            <StatBlock gridStore={this.state.gridStore}></StatBlock>
-            <Guide nonogramKey={this.state.gridStore.gridKey}></Guide>
+            <StatBlock gridStore={gridStore}></StatBlock>
+            <Guide nonogramKey={gridStore.gridKey}></Guide>
           </div>
           <div 
             className={"gridPanel no-print" + 
-              (this.state.gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
-              (this.state.gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
+              (gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
+              (gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
           >
-            <GridSolverInfo gridStore={ this.state.gridStore }></GridSolverInfo>
+            <GridSolverInfo gridStore={ gridStore }></GridSolverInfo>
             <div className="grid-container-padding">
-              <Grid gridStore={ this.state.gridStore }/>
+              <Grid gridStore={ gridStore }/>
             </div>
           </div>
         </div>

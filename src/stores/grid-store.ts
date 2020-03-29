@@ -1,9 +1,9 @@
 import { action, autorun, computed, observable, reaction } from "mobx";
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { NonogramGrid } from 'src/models/nonogram-grid';
-import { PartialNonogramSolution } from 'src/models/nonogram-solve-steps';
-import { Pixel } from "src/Pixel";
+import { NonogramGrid } from '../models/nonogram-grid';
+import { PartialNonogramSolution } from '../models/nonogram-solve-steps';
+import { Pixel } from "../Pixel";
 import { generateKey } from '../Guide/guide-number-generator';
 import { GridEditMode } from '../models/grid-edit-mode';
 import { NonogramCell } from '../models/nonogram-cell';
@@ -13,8 +13,9 @@ import { getGridSolutionSummaryObservable } from '../utilities/utilities';
 import { attemptDeserializeGrid, serializedKeys, serializeGrid } from './grid-serializer';
 import { getQueryParams, setQueryParams } from './window-query-param-accessor';
 import { overwriteFavicon } from './window-favicon-manager';
+import { RootStore } from './root-store/root-store';
 
-export class ObservableGridStateStore{
+export class GridStore {
     @observable grid: Pixel[][];
     @observable partialGridSolve: Pixel[][];
     @observable mode: GridEditMode = GridEditMode.EDIT;
@@ -26,7 +27,7 @@ export class ObservableGridStateStore{
     @observable difficultyRating: number = 0;
     @observable computingSolution: boolean = false;
 
-    constructor(){
+    constructor(rootStore: RootStore){
         this.setupSolutionComputation();
         this.setupGridQueryParamUpdater();
     }

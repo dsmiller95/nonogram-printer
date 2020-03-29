@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
-import { NonogramKey, SolvedNonogram } from 'src/models/nonogram-parameter';
+import { NonogramKey, SolvedNonogram } from '../models/nonogram-parameter';
 import { tap, switchMap, map, first } from 'rxjs/operators';
-import { solveNonogram } from 'src/nonogram-solver/nonogram-solve';
-import { actionDifficultyRating, SolvedNonogramWithDifficulty } from 'src/models/nonogram-solve-steps';
+import { solveNonogram } from '../nonogram-solver/nonogram-solve';
+import { actionDifficultyRating, SolvedNonogramWithDifficulty } from '../models/nonogram-solve-steps';
 
 export function getLastItem<T>(iterator: Iterator<any, T, never>): T {
     let current: any;

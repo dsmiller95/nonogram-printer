@@ -1,4 +1,4 @@
-import { NonogramAction } from 'src/models/nonogram-solve-steps';
+import { NonogramAction } from '../models/nonogram-solve-steps';
 import { NonogramCell } from '../models/nonogram-cell';
 import { NonogramGrid } from '../models/nonogram-grid';
 import { getLastItem } from '../utilities/utilities';

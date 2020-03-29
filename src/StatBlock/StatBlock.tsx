@@ -2,13 +2,13 @@ import { Button, Card, CardActions, CardContent, CircularProgress, Typography, m
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { ObservableGridStateStore } from '../stores/grid-store';
+import { GridStore } from '../stores/grid-store';
 import './StatBlock.css';
 import { pathToFileURL } from 'url';
 import { Styles, WithStyles } from '@material-ui/core/styles/withStyles';
 
 export interface IProps extends WithStyles<typeof styles> {
-    gridStore: ObservableGridStateStore;
+    gridStore: GridStore;
 }
 
 interface IState {
