@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { GridStore } from '../stores/grid-store';
+import { GridStore } from '../stores/grid-store/grid-store';
 import './Grid.css';
 import { Pixel } from '../Pixel';
 import { GridEditMode } from '../models/grid-edit-mode';
 import { observer } from 'mobx-react';
+import { UIStore } from '../stores/ui-store/ui-store';
 
 export interface IProps {
     gridStore: GridStore;
+    uiStore: UIStore;
 }
 
 interface IState {
@@ -65,7 +67,7 @@ class Grid extends React.Component<IProps, IState> {
 
     public render() {
         const store = this.props.gridStore;
-        const isEditable = store.mode === GridEditMode.EDIT;
+        const isEditable = this.props.uiStore.mode === GridEditMode.EDIT;
         const grid = isEditable ? store.grid : store.partialGridSolve;
         const solutionGrid = store.aggregateSolutionGrid;
 

@@ -2,13 +2,15 @@ import { Button, Card, CardActions, CardContent, CircularProgress, Typography, m
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { GridStore } from '../stores/grid-store';
+import { GridStore } from '../stores/grid-store/grid-store';
 import './StatBlock.css';
 import { pathToFileURL } from 'url';
 import { Styles, WithStyles } from '@material-ui/core/styles/withStyles';
+import { UIStore } from '../stores/ui-store/ui-store';
 
 export interface IProps extends WithStyles<typeof styles> {
     gridStore: GridStore;
+    uiStore: UIStore;
 }
 
 interface IState {
@@ -35,9 +37,10 @@ class StatBlock extends React.Component<IProps, IState> {
 
     public render() {
         const gridStore = this.props.gridStore;
+        const uiStore = this.props.uiStore;
         const solutions = gridStore.solution.solutions;
         const switchMode = () => {
-            gridStore.switchMode();
+            uiStore.switchMode();
         }
         const stepSolve = () => {
             gridStore.nextSolutionStep();
@@ -48,7 +51,7 @@ class StatBlock extends React.Component<IProps, IState> {
                 return <CircularProgress size={20} />;
             return source;
         }
-        const isSolving = gridStore.mode === GridEditMode.SOLVE;
+        const isSolving = uiStore.mode === GridEditMode.SOLVE;
         return (
             <Card className={this.props.classes.card + " StatBlock no-print"} variant="outlined">
                 <CardContent>
@@ -88,7 +91,7 @@ class StatBlock extends React.Component<IProps, IState> {
                 <CardActions>
                     <Button size="small" variant="contained" color="secondary"
                         onClick={switchMode} >
-                        {gridStore.mode === GridEditMode.EDIT ? 'Step Solve' : 'Edit'}
+                        {isSolving ? 'Edit' : 'Step Solve'}
                     </Button>
                     {isSolving ? <Button size="small" variant="contained" color="secondary"
                         onClick={stepSolve} >

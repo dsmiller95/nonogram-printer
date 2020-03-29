@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "baseUrl": ".",
     "outDir": "build/dist",
     "module": "ESNext",
     "target": "es6",

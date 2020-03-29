@@ -1,24 +1,24 @@
 import { action, autorun, computed, observable, reaction } from "mobx";
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { NonogramGrid } from '../models/nonogram-grid';
-import { PartialNonogramSolution } from '../models/nonogram-solve-steps';
-import { Pixel } from "../Pixel";
-import { generateKey } from '../Guide/guide-number-generator';
-import { GridEditMode } from '../models/grid-edit-mode';
-import { NonogramCell } from '../models/nonogram-cell';
-import { NonogramKey, SolvedNonogram } from '../models/nonogram-parameter';
-import { solveNonogram } from '../nonogram-solver/nonogram-solve';
-import { getGridSolutionSummaryObservable } from '../utilities/utilities';
-import { attemptDeserializeGrid, serializedKeys, serializeGrid } from './grid-serializer';
-import { getQueryParams, setQueryParams } from './window-query-param-accessor';
-import { overwriteFavicon } from './window-favicon-manager';
-import { RootStore } from './root-store/root-store';
+import { NonogramGrid } from '../../models/nonogram-grid';
+import { PartialNonogramSolution } from '../../models/nonogram-solve-steps';
+import { Pixel } from "../../Pixel";
+import { generateKey } from '../../Guide/guide-number-generator';
+import { GridEditMode } from '../../models/grid-edit-mode';
+import { NonogramCell } from '../../models/nonogram-cell';
+import { NonogramKey, SolvedNonogram } from '../../models/nonogram-parameter';
+import { solveNonogram } from '../../nonogram-solver/nonogram-solve';
+import { getGridSolutionSummaryObservable } from '../../utilities/utilities';
+import { attemptDeserializeGrid, serializedKeys, serializeGrid } from '../grid-serializer';
+import { getQueryParams, setQueryParams } from '../window-query-param-accessor';
+import { overwriteFavicon } from '../window-favicon-manager';
+import { RootStore } from '../root-store/root-store';
+import { nonogramGridToPixelGrid, nonogramCellToPixel } from './grid-utilities';
 
 export class GridStore {
     @observable grid: Pixel[][];
     @observable partialGridSolve: Pixel[][];
-    @observable mode: GridEditMode = GridEditMode.EDIT;
     @observable partialSolution: PartialNonogramSolution | undefined;
 
     @observable solution: SolvedNonogram = {
@@ -79,7 +79,7 @@ export class GridStore {
             return undefined;
         }
 
-        const solutions = this.solution.solutions.map(solution => this.nonogramGridToPixelGrid(solution.solution));
+        const solutions = this.solution.solutions.map(solution => nonogramGridToPixelGrid(solution.solution));
         if(solutions[0].length <= 0 || solutions[0][0].length <= 0) {
             return undefined;
         }
@@ -93,14 +93,6 @@ export class GridStore {
         }));
     }
 
-    @action switchMode(){
-        if(this.mode === GridEditMode.EDIT){
-            this.beginSolving();
-        } else {
-            this.mode = GridEditMode.EDIT;
-        }
-    }
-
     @action updatePixel(row: number, column: number, value: Pixel){
         if(this.grid[row][column] !== value){
             this.grid[row][column] = value;
@@ -110,7 +102,6 @@ export class GridStore {
 
     private solutionGenerator: Generator<PartialNonogramSolution, SolvedNonogram, undefined>;
     @action beginSolving() {
-        this.mode = GridEditMode.SOLVE;
         this.solutionGenerator = solveNonogram(this.gridKey);
         const nextStep = this.solutionGenerator.next();
         if(nextStep.done){
@@ -118,24 +109,9 @@ export class GridStore {
             return;
         }
         this.partialSolution = nextStep.value;
-        this.partialGridSolve = this.nonogramGridToPixelGrid(this.partialSolution.partialSolution);
+        this.partialGridSolve = nonogramGridToPixelGrid(this.partialSolution.partialSolution);
     }
 
-    private nonogramGridToPixelGrid(nonogram: NonogramGrid): Pixel[][] {
-        return nonogram.gridData.map(row => 
-            row.map(cell => this.nonogramCellToPixel(cell)));
-    }
-
-    private nonogramCellToPixel(cell: NonogramCell): Pixel {
-        switch(cell){
-            case NonogramCell.SET:
-                return Pixel.Black;
-            case NonogramCell.UNSET:
-                return Pixel.White;
-            case NonogramCell.UNKNOWN:
-                return Pixel.Unknown;
-        }
-    }
 
     @action nextSolutionStep() {
         const nextStep = this.solutionGenerator.next();
@@ -145,7 +121,7 @@ export class GridStore {
         }
         this.partialSolution = nextStep.value;
         const newPartialSolution = this.partialSolution.partialSolution.gridData.map(row => 
-            row.map(cell => this.nonogramCellToPixel(cell)));
+            row.map(cell => nonogramCellToPixel(cell)));
         this.partialGridSolve = newPartialSolution;
     }
 

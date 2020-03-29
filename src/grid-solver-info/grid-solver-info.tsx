@@ -1,13 +1,16 @@
 import { Typography } from '@material-ui/core';
 import * as React from 'react';
 import { GridEditMode } from '../models/grid-edit-mode';
-import { GridStore } from '../stores/grid-store';
+import { GridStore } from '../stores/grid-store/grid-store';
 import './grid-solver-info.css';
 import { observer } from 'mobx-react';
 import { NonogramActionData, NonogramAction, EvaluateRowAction, RewindAction } from '../models/nonogram-solve-steps';
+import { RootStore } from '../stores/root-store/root-store';
+import { UIStore } from '../stores/ui-store/ui-store';
 
 export interface IProps {
-    gridStore: GridStore
+    gridStore: GridStore;
+    uiStore: UIStore;
 }
 
 interface IState {
@@ -37,7 +40,7 @@ class GridSolverInfo extends React.Component<IProps, IState> {
             }
         }
 
-        const isSolving = this.props.gridStore.mode === GridEditMode.SOLVE;
+        const isSolving = this.props.uiStore.mode === GridEditMode.SOLVE;
         if(!isSolving){
             return <span className='grid-panel-header'>
                 <Typography>Edit</Typography>

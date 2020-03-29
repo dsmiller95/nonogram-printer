@@ -7,7 +7,7 @@ import Grid from './grid/Grid';
 import Guide from './Guide/Guide';
 import { GridEditMode } from './models/grid-edit-mode';
 import StatBlock from './StatBlock/StatBlock';
-import { GridStore } from './stores/grid-store';
+import { GridStore } from './stores/grid-store/grid-store';
 import { RootStore } from './stores/root-store/root-store';
 
 interface State {
@@ -40,21 +40,22 @@ class App extends React.Component<object, State> {
 
   public render() {
     const gridStore = this.state.rootStore.gridStore;
+    const uiStore = this.state.rootStore.uiStore;
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
           <div className="sidePanel">
-            <StatBlock gridStore={gridStore}></StatBlock>
+            <StatBlock gridStore={gridStore} uiStore={ uiStore }></StatBlock>
             <Guide nonogramKey={gridStore.gridKey}></Guide>
           </div>
           <div 
             className={"gridPanel no-print" + 
-              (gridStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
-              (gridStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
+              (uiStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
+              (uiStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
           >
-            <GridSolverInfo gridStore={ gridStore }></GridSolverInfo>
+            <GridSolverInfo gridStore={ gridStore } uiStore={ uiStore }></GridSolverInfo>
             <div className="grid-container-padding">
-              <Grid gridStore={ gridStore }/>
+              <Grid gridStore={ gridStore } uiStore={ uiStore }/>
             </div>
           </div>
         </div>
