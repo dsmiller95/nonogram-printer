@@ -82,12 +82,11 @@ class Grid extends React.Component<IProps, IState> {
         };
 
         const dragEnter = (row: number, col: number) => {
-            if(this.isDragging){
+            if(this.isDragging && isEditable){
                 gridStore.updatePixel(row, col, this.dragValueChange);
             }
         };
         const dragStart = (pixel: Pixel) => {
-            if(!isEditable) return;
             if(this.isDragging) return;
             this.isDragging = true;
             this.dragValueChange = pixel === Pixel.White ? Pixel.Black : Pixel.White;
@@ -105,11 +104,13 @@ class Grid extends React.Component<IProps, IState> {
                                         dragEnter(rowIndex, colIndex)
                                     }}
                                     onMouseDown={(event) => {
+                                        if(!isEditable) return;
                                         dragStart(item);
                                         gridStore.updatePixel(rowIndex, colIndex, this.dragValueChange);
                                         event.preventDefault();
                                     }}
                                     onTouchStart={(event) => {
+                                        if(!isEditable) return;
                                         dragStart(item);
                                     }}
                                     onMouseUp={() => {

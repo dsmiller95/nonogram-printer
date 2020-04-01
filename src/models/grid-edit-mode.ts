@@ -1,4 +1,5 @@
 export enum GridEditMode {
     EDIT,
-    SOLVE
+    SOLVE_COMPUTE,
+    SOLVE_MANUAL
 }

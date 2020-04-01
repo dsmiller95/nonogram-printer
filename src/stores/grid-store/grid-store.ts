@@ -2,9 +2,7 @@ import { action, computed, observable } from "mobx";
 import { generateKey } from '../../Guide/guide-number-generator';
 import { NonogramKey } from '../../models/nonogram-parameter';
 import { Pixel } from "../../Pixel";
-import { attemptDeserializeGrid, serializedKeys } from '../grid-serializer';
 import { RootStore } from '../root-store/root-store';
-import { getQueryParams } from '../window-query-param-accessor';
 
 export class GridStore {
     @observable grid: Pixel[][];

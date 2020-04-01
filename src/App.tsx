@@ -88,7 +88,7 @@ class App extends React.Component<object, State> {
           <div 
             className={"gridPanel no-print" + 
               (uiStore.mode === GridEditMode.EDIT ? " grid-panel-editing" : "") +
-              (uiStore.mode === GridEditMode.SOLVE ? " grid-panel-solving" : "")}
+              (uiStore.mode === GridEditMode.SOLVE_COMPUTE ? " grid-panel-solving" : "")}
           >
             <GridSolverInfo gridSolverStore={ gridSolverStore } uiStore={ uiStore }></GridSolverInfo>
             <div className="grid-container-padding">
