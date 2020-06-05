@@ -1,0 +1,38 @@
+.Grid {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: linear-gradient(45deg, black 25%, transparent 25%),
+    linear-gradient(-45deg, black 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, black 75%),
+    linear-gradient(-45deg, transparent 75%, black 75%);
+  background-size: 1.786% 1.786%;
+  background-position: 0 0, 0 0.893%, 0.893% -0.893%, -0.893% 0px;
+  background-color: white;
+
+  .row {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+  }
+  .col {
+    border: 1px solid black;
+    flex-grow: 1;
+  }
+  .col.uncertain {
+    opacity: 0.8;
+  }
+  .col.black {
+    background-color: black;
+  }
+  .col.unknown {
+    border: 1px solid white;
+  }
+  .col.white {
+    background-color: white;
+  }
+}

@@ -52,10 +52,10 @@ export function getLastItemWithInterrupt<T>(iterator: Iterator<any, T, never>, i
         throw "interruptPeriod must be less than the interval, otherwise no work gets done";
     }
     return new Observable((subscriber) => {
-        let lastInterrupt = (new Date()).getTime();
+        let lastInterrupt = Date.now();
         const computeFunction = () => {
             while(
-                (lastInterrupt + interruptInterval) > (new Date()).getTime() && 
+                (lastInterrupt + interruptInterval) > Date.now() && 
                 !(current = iterator.next()).done){
                 }
             if(subscriber.closed){
