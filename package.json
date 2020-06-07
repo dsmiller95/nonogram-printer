@@ -10,6 +10,7 @@
     "mobx": "^5.14.0",
     "mobx-react": "^6.1.3",
     "mobx-utils": "^5.5.4",
+    "nonogram-grid": "^1.0.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts-ts": "3.1.0",

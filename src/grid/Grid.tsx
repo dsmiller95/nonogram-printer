@@ -6,7 +6,9 @@ import { GridEditMode } from "../models/grid-edit-mode";
 import { observer } from "mobx-react";
 import { UIStore } from "../stores/ui-store/ui-store";
 import { GridSolverStore } from "../stores/grid-solver-store/grid-solver-store";
-import GridDumb, { PixelDisplay } from "./grid-dumb/GridDumb";
+
+import { PixelDisplay, GridDumb } from "nonogram-grid";
+import "nonogram-grid/dist/index.css";
 
 export interface IProps {
   gridStore: GridStore;
