@@ -1,6 +1,6 @@
 import { action, computed, observable } from "mobx";
 import { NonogramKey } from "../../models/nonogram-parameter";
-import { Pixel } from "../../Pixel";
+import { Pixel, PixelState } from "../../Pixel";
 import { RootStore } from "../root-store/root-store";
 import { generateKey } from "nonogram-grid";
 
@@ -25,9 +25,9 @@ export class GridStore {
     };
   }
 
-  @action updatePixel(row: number, column: number, value: Pixel) {
-    if (this.grid[row][column] !== value) {
-      this.grid[row][column] = value;
+  @action updatePixel(row: number, column: number, value: PixelState) {
+    if (this.grid[row][column].value !== value) {
+      this.grid[row][column].value = value;
       this.grid = [...this.grid];
     }
   }

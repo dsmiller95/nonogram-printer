@@ -38,9 +38,6 @@ class StatBlock extends React.Component<IProps, IState> {
         const gridSolverStore = this.props.gridSolverStore;
         const uiStore = this.props.uiStore;
         const solutions = gridSolverStore.solution.solutions;
-        const switchMode = () => {
-            uiStore.switchMode();
-        }
         const stepSolve = () => {
             gridSolverStore.nextSolutionStep();
         }
@@ -50,7 +47,7 @@ class StatBlock extends React.Component<IProps, IState> {
                 return <CircularProgress size={20} />;
             return source;
         }
-        const isSolving = uiStore.mode === GridEditMode.SOLVE;
+        const isSolving = uiStore.mode === GridEditMode.SOLVE_COMPUTE;
         return (
             <Card className={this.props.classes.card + " StatBlock no-print"} variant="outlined">
                 <CardContent>
@@ -87,16 +84,25 @@ class StatBlock extends React.Component<IProps, IState> {
                         )}
                     </div>
                 </CardContent>
-                <CardActions>
-                    <Button size="small" variant="contained" color="secondary"
-                        onClick={switchMode} >
-                        {isSolving ? 'Edit' : 'Step Solve'}
-                    </Button>
-                    {isSolving ? <Button size="small" variant="contained" color="secondary"
-                        onClick={stepSolve} >
-                        Step
-                    </Button> : ''}
-                </CardActions>
+                {isSolving ?
+                    <CardActions>
+                        <Button size="small" variant="contained" color="secondary"
+                            onClick={() => uiStore.beginEditing()} >
+                            Edit
+                        </Button>
+                        <Button size="small" variant="contained" color="secondary"
+                            onClick={stepSolve} >
+                            Step
+                        </Button>
+                    </CardActions>
+                :
+                    <CardActions>
+                        <Button size="small" variant="contained" color="secondary"
+                            onClick={() => uiStore.beginSolvingComputed()} >
+                            Step Solve
+                        </Button>
+                    </CardActions>
+                }
             </Card>
         );
     }

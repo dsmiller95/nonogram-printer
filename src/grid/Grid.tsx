@@ -1,18 +1,15 @@
 import * as React from "react";
 import { GridStore } from "../stores/grid-store/grid-store";
 import "./Grid.css";
-import { Pixel } from "../Pixel";
+import { Pixel, PixelState } from "../Pixel";
 import { GridEditMode } from "../models/grid-edit-mode";
 import { observer } from "mobx-react";
 import { UIStore } from "../stores/ui-store/ui-store";
-import { GridSolverStore } from "../stores/grid-solver-store/grid-solver-store";
-
 import { PixelDisplay, GridDumb } from "nonogram-grid";
 import "nonogram-grid/dist/index.css";
 
 export interface IProps {
   gridStore: GridStore;
-  gridSolverStore: GridSolverStore;
   uiStore: UIStore;
 }
 
@@ -24,40 +21,29 @@ class Grid extends React.Component<IProps, IState> {
     super(props);
   }
 
-  private dragValueChange: Pixel;
+  private dragValueChange: PixelState;
 
   componentDidMount() {}
 
   public render() {
     const gridStore = this.props.gridStore;
-    const gridSolverStore = this.props.gridSolverStore;
     const isEditable = this.props.uiStore.mode === GridEditMode.EDIT;
-    const grid = isEditable ? gridStore.grid : gridSolverStore.partialGridSolve;
-    const solutionGrid = gridSolverStore.aggregateSolutionGrid;
+    const grid = gridStore.grid;
 
     const fullGrid = grid.map((row, rowIndex) =>
       row.map((pix, colIndex) => {
-        if (!isEditable || solutionGrid === undefined) {
-          return pix === Pixel.Black
+        if (!isEditable || !pix.isMaybe) {
+          return pix.value === PixelState.Black
             ? PixelDisplay.Black
-            : pix === Pixel.White
+            : pix.value === PixelState.White
             ? PixelDisplay.White
             : PixelDisplay.Unknown;
         }
-        const solutionValue = solutionGrid[rowIndex][colIndex];
-
-        switch (pix) {
-          case Pixel.Black:
-            return solutionValue === Pixel.Black
-              ? PixelDisplay.Black
-              : PixelDisplay.UnknownBlack;
-          case Pixel.White:
-            return solutionValue === Pixel.White
-              ? PixelDisplay.White
-              : PixelDisplay.UnknownWhite;
-          case Pixel.Unknown:
-            return PixelDisplay.Unknown;
-        }
+        return pix.value === PixelState.Black
+          ? PixelDisplay.UnknownBlack
+          : pix.value === PixelState.White
+          ? PixelDisplay.UnknownWhite
+          : PixelDisplay.Unknown;
       })
     );
 
@@ -66,7 +52,9 @@ class Grid extends React.Component<IProps, IState> {
     };
     const dragStart = (row: number, col: number) => {
       this.dragValueChange =
-        grid[row][col] === Pixel.White ? Pixel.Black : Pixel.White;
+        grid[row][col].value === PixelState.White
+          ? PixelState.Black
+          : PixelState.White;
       gridStore.updatePixel(row, col, this.dragValueChange);
     };
     return (

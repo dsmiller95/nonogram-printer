@@ -39,7 +39,7 @@ class GridSolverInfo extends React.Component<IProps, IState> {
             }
         }
 
-        const isSolving = this.props.uiStore.mode === GridEditMode.SOLVE;
+        const isSolving = this.props.uiStore.mode === GridEditMode.SOLVE_COMPUTE;
         if(!isSolving){
             return <span className='grid-panel-header'>
                 <Typography>Edit</Typography>
