@@ -71,12 +71,14 @@ class Grid extends React.Component<IProps, IState> {
     };
     return (
       <div className="gridContainer">
-        <GridDumb
-          pixels={fullGrid}
-          editable={isEditable}
-          dragStart={dragStart}
-          onDrag={dragEnter}
-        ></GridDumb>
+        <div className="insideContainer">
+          <GridDumb
+            pixels={fullGrid}
+            editable={isEditable}
+            dragStart={dragStart}
+            onDrag={dragEnter}
+          ></GridDumb>
+        </div>
       </div>
     );
   }
