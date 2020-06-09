@@ -25,7 +25,7 @@ import {
   getQueryParams,
 } from "./stores/window-query-param-accessor";
 import { overwriteFavicon } from "./stores/window-favicon-manager";
-import { Pixel } from "./Pixel";
+import { Pixel, PixelState } from "./Pixel";
 
 interface State {
   rootStore: RootStore;
@@ -59,13 +59,15 @@ class App extends React.Component<object, State> {
   }
 
   private setupGridQueryParamUpdater(gridStore: GridStore) {
+    // TODO: is this replcated in grid-solver-store?
     reaction(
-      () => gridStore.grid,
+      () => gridStore.gridStates,
       (grid, reaction) => {
         if (!grid) return;
-        const serialized = serializeGrid(grid);
+        const pixelStates = grid.map((col) => col.map((pix) => pix));
+        const serialized = serializeGrid(pixelStates);
         setQueryParams(serialized);
-        overwriteFavicon(grid);
+        overwriteFavicon(pixelStates);
       },
       {
         delay: 1000,
@@ -73,7 +75,7 @@ class App extends React.Component<object, State> {
     );
   }
 
-  private static generateGirdFromURLOrDefault(): Pixel[][] {
+  private static generateGirdFromURLOrDefault(): PixelState[][] {
     const queryGridData = getQueryParams(...serializedKeys);
     const deserialized = attemptDeserializeGrid(queryGridData);
     if (deserialized) {
@@ -81,11 +83,11 @@ class App extends React.Component<object, State> {
     }
     const width = 16,
       height = 16;
-    let grid: Pixel[][] = [];
+    let grid: PixelState[][] = [];
     for (let i = 0; i < width; i++) {
-      let col: Pixel[] = [];
+      let col: PixelState[] = [];
       for (let j = 0; j < height; j++) {
-        col.push(Pixel.White);
+        col.push(PixelState.White);
       }
       grid.push(col);
     }

@@ -2,8 +2,12 @@ import { action, autorun, computed, observable, reaction } from "mobx";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { PartialNonogramSolution } from "../../models/nonogram-solve-steps";
-import { Pixel } from "../../Pixel";
-import { NonogramKey, SolvedNonogram } from "../../models/nonogram-parameter";
+import { Pixel, PixelState } from "../../Pixel";
+import {
+  NonogramKey,
+  SolvedNonogram,
+  NonogramSolution,
+} from "../../models/nonogram-parameter";
 import { solveNonogram } from "../../nonogram-solver/nonogram-solve";
 import { getGridSolutionSummaryObservable } from "../../utilities/utilities";
 import { serializeGrid } from "../grid-serializer";
@@ -17,7 +21,7 @@ import {
 import { GridStore } from "../grid-store/grid-store";
 
 export class GridSolverStore {
-  @observable partialGridSolve: Pixel[][];
+  @observable partialGridSolve: PixelState[][];
   @observable partialSolution: PartialNonogramSolution | undefined;
 
   @observable solution: SolvedNonogram = {
@@ -32,13 +36,15 @@ export class GridSolverStore {
   }
 
   private setupGridQueryParamUpdater() {
+    // TODO: is this replcated in app.tsx?
     reaction(
-      () => this.gridStore.grid,
+      () => this.gridStore.gridStates,
       (grid, reaction) => {
         if (!grid) return;
-        const serialized = serializeGrid(grid);
+        const pixelStates = grid.map((col) => col.map((pix) => pix));
+        const serialized = serializeGrid(pixelStates);
         setQueryParams(serialized);
-        overwriteFavicon(grid);
+        overwriteFavicon(pixelStates);
       },
       {
         delay: 1000,
@@ -58,35 +64,56 @@ export class GridSolverStore {
     });
 
     getGridSolutionSummaryObservable(
-      keyChangeObservable.pipe(tap(() => (this.computingSolution = true)))
+      keyChangeObservable.pipe(
+        tap(() => {
+          this.computingSolution = true;
+        })
+      )
     ).subscribe((solution) => {
       this.computingSolution = false;
-      this.solution = solution.solved;
       this.difficultyRating = solution.difficultyRating;
+      const aggSolution = this.getAggregateSolutionGrid(solution.solved);
+      if (aggSolution) {
+        this.setMaybesOnSourceGrid(aggSolution);
+      }
+      this.solution = solution.solved;
     });
   }
 
-  @computed get aggregateSolutionGrid(): Pixel[][] | undefined {
-    if (this.computingSolution || !this.solution?.solutions?.[0]) {
+  private setMaybesOnSourceGrid(aggregateSolutionGrid: PixelState[][]): void {
+    const maybes = aggregateSolutionGrid.map((col, colIndex) =>
+      col.map((pixel, rowIndex) => {
+        const gridValue = this.gridStore.gridStates[colIndex][rowIndex];
+        return pixel !== gridValue;
+      })
+    );
+    this.gridStore.setIsMaybe(maybes);
+  }
+
+  private getAggregateSolutionGrid(
+    solution: SolvedNonogram
+  ): PixelState[][] | undefined {
+    if (!solution.solutions?.[0]) {
       return undefined;
     }
 
-    const solutions = this.solution.solutions.map((solution) =>
+    const solutions = solution.solutions.map((solution) =>
       nonogramGridToPixelGrid(solution.solution)
     );
     if (solutions[0].length <= 0 || solutions[0][0].length <= 0) {
       return undefined;
     }
 
-    const result: Pixel[][] = new Array(solutions[0].length).fill(
+    const result: PixelState[][] = new Array(solutions[0].length).fill(
       new Array(solutions[0][0].length).fill(undefined)
     );
+
     return result.map((row, firstIndex) =>
       row.map((pix, secondIndex) => {
         return solutions
           .map((solution) => solution[firstIndex][secondIndex])
           .reduce((aggregate, current) =>
-            current === aggregate ? current : Pixel.Unknown
+            current === aggregate ? current : PixelState.Unknown
           );
       })
     );
