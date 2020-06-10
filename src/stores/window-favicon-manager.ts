@@ -10,10 +10,10 @@ export function overwriteFavicon(pixels: PixelState[][]): void {
   ctx.fillStyle = "#FFF";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#000";
-  for (let columnIndex = 0; columnIndex < pixels.length; columnIndex++) {
-    for (let rowIndex = 0; rowIndex < pixels[columnIndex].length; rowIndex++) {
-      if (pixels[columnIndex][rowIndex] === PixelState.Black) {
-        ctx.fillRect(columnIndex, rowIndex, 1, 1);
+  for (let rowIndex = 0; rowIndex < pixels.length; rowIndex++) {
+    for (let colIndex = 0; colIndex < pixels[rowIndex].length; colIndex++) {
+      if (pixels[rowIndex][colIndex] === PixelState.Black) {
+        ctx.fillRect(colIndex, rowIndex, 1, 1);
       }
     }
   }

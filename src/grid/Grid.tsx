@@ -47,15 +47,15 @@ class Grid extends React.Component<IProps, IState> {
       })
     );
 
-    const dragEnter = (col: number, row: number) => {
-      gridStore.updatePixel(col, row, this.dragValueChange);
+    const dragEnter = (row: number, col: number) => {
+      gridStore.updatePixel(row, col, this.dragValueChange);
     };
-    const dragStart = (col: number, row: number) => {
+    const dragStart = (row: number, col: number) => {
       this.dragValueChange =
-        grid[col][row].value === PixelState.White
+        grid[row][col].value === PixelState.White
           ? PixelState.Black
           : PixelState.White;
-      gridStore.updatePixel(col, row, this.dragValueChange);
+      gridStore.updatePixel(row, col, this.dragValueChange);
     };
     return (
       <div className="gridContainer">

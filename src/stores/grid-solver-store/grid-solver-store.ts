@@ -41,7 +41,7 @@ export class GridSolverStore {
       () => this.gridStore.gridStates,
       (grid, reaction) => {
         if (!grid) return;
-        const pixelStates = grid.map((col) => col.map((pix) => pix));
+        const pixelStates = grid.map((row) => row.map((pix) => pix));
         const serialized = serializeGrid(pixelStates);
         setQueryParams(serialized);
         overwriteFavicon(pixelStates);
@@ -81,9 +81,9 @@ export class GridSolverStore {
   }
 
   private setMaybesOnSourceGrid(aggregateSolutionGrid: PixelState[][]): void {
-    const maybes = aggregateSolutionGrid.map((col, colIndex) =>
-      col.map((pixel, rowIndex) => {
-        const gridValue = this.gridStore.gridStates[colIndex][rowIndex];
+    const maybes = aggregateSolutionGrid.map((row, rowIndex) =>
+      row.map((pixel, colIndex) => {
+        const gridValue = this.gridStore.gridStates[rowIndex][colIndex];
         return pixel !== gridValue;
       })
     );
@@ -108,10 +108,10 @@ export class GridSolverStore {
       new Array(solutions[0][0].length).fill(undefined)
     );
 
-    return result.map((row, firstIndex) =>
-      row.map((pix, secondIndex) => {
+    return result.map((row, rowIndex) =>
+      row.map((pix, colIndex) => {
         return solutions
-          .map((solution) => solution[firstIndex][secondIndex])
+          .map((solution) => solution[rowIndex][colIndex])
           .reduce((aggregate, current) =>
             current === aggregate ? current : PixelState.Unknown
           );

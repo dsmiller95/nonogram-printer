@@ -11,11 +11,11 @@ export class GridStore {
   constructor(rootStore: RootStore) {}
 
   @computed get grid(): Pixel[][] {
-    const newGrid = this.gridStates?.map((col, colIndex) =>
-      col.map((pix, rowIndex) => {
+    const newGrid = this.gridStates?.map((row, rowIndex) =>
+      row.map((pix, colIndex) => {
         return {
           value: pix,
-          isMaybe: this.gridMaybe?.[colIndex][rowIndex] ?? false,
+          isMaybe: this.gridMaybe?.[rowIndex][colIndex] ?? false,
         } as Pixel;
       })
     );
@@ -38,9 +38,9 @@ export class GridStore {
     };
   }
 
-  @action updatePixel(column: number, row: number, value: PixelState) {
-    if (this.gridStates[column][row] !== value) {
-      this.gridStates[column][row] = value;
+  @action updatePixel(row: number, column: number, value: PixelState) {
+    if (this.gridStates[row][column] !== value) {
+      this.gridStates[row][column] = value;
       this.gridStates = [...this.gridStates];
     }
   }
@@ -50,7 +50,7 @@ export class GridStore {
   }
 
   @action instantiateGrid(gridData: PixelState[][]) {
-    this.gridMaybe = gridData.map((col) => col.map((x) => false));
+    this.gridMaybe = gridData.map((row) => row.map((x) => false));
     this.gridStates = gridData;
   }
 }
