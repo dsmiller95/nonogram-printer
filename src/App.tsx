@@ -124,7 +124,11 @@ class App extends React.Component<object, State> {
               uiStore={uiStore}
             ></GridSolverInfo>
             <div className="grid-container-padding">
-              <Grid gridStore={editableGridStore} uiStore={uiStore} />
+              <Grid
+                gridStore={editableGridStore}
+                uiStore={uiStore}
+                gridSolverStore={gridSolverStore}
+              />
             </div>
           </div>
         </div>
