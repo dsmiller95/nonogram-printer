@@ -1,5 +1,9 @@
 {
     "files.exclude": {
         "**/*.css": true
-    }
+    },
+    "editor.tabSize": 2,
+    "cSpell.words": [
+        "autorun"
+    ]
 }

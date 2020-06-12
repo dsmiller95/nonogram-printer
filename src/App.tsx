@@ -59,7 +59,6 @@ class App extends React.Component<object, State> {
   }
 
   private setupGridQueryParamUpdater(gridStore: GridStore) {
-    // TODO: is this replcated in grid-solver-store?
     reaction(
       () => gridStore.gridStates,
       (grid, reaction) => {

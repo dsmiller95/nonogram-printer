@@ -1,18 +1,11 @@
-import { action, autorun, computed, observable, reaction } from "mobx";
+import { action, autorun, observable } from "mobx";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { PartialNonogramSolution } from "../../models/nonogram-solve-steps";
-import { Pixel, PixelState } from "../../Pixel";
-import {
-  NonogramKey,
-  SolvedNonogram,
-  NonogramSolution,
-} from "../../models/nonogram-parameter";
+import { PixelState } from "../../Pixel";
+import { NonogramKey, SolvedNonogram } from "../../models/nonogram-parameter";
 import { solveNonogram } from "../../nonogram-solver/nonogram-solve";
 import { getGridSolutionSummaryObservable } from "../../utilities/utilities";
-import { serializeGrid } from "../grid-serializer";
-import { setQueryParams } from "../window-query-param-accessor";
-import { overwriteFavicon } from "../window-favicon-manager";
 import { RootStore } from "../root-store/root-store";
 import {
   nonogramGridToPixelGrid,
@@ -29,27 +22,24 @@ export class GridSolverStore {
   };
   @observable difficultyRating: number = 0;
   @observable computingSolution: boolean = false;
+  @observable stepTimeMS: number = 200;
+  @observable autoStepSolve: boolean = false;
 
   constructor(rootStore: RootStore, private gridStore: GridStore) {
     this.setupSolutionComputation();
-    this.setupGridQueryParamUpdater();
+    this.setupAutoSolutionStepping();
   }
 
-  private setupGridQueryParamUpdater() {
-    // TODO: is this replcated in app.tsx?
-    reaction(
-      () => this.gridStore.gridStates,
-      (grid, reaction) => {
-        if (!grid) return;
-        const pixelStates = grid.map((row) => row.map((pix) => pix));
-        const serialized = serializeGrid(pixelStates);
-        setQueryParams(serialized);
-        overwriteFavicon(pixelStates);
-      },
-      {
-        delay: 1000,
+  private stepSolveInterval: number;
+  private setupAutoSolutionStepping() {
+    autorun(() => {
+      window.clearInterval(this.stepSolveInterval);
+      if (this.autoStepSolve) {
+        this.stepSolveInterval = window.setInterval(() => {
+          this.nextSolutionStep();
+        }, this.stepTimeMS);
       }
-    );
+    });
   }
 
   private setupSolutionComputation() {
@@ -138,7 +128,7 @@ export class GridSolverStore {
   }
 
   @action nextSolutionStep() {
-    const nextStep = this.solutionGenerator.next();
+    const nextStep = this.solutionGenerator?.next();
     if (nextStep.done) {
       this.partialSolution = undefined;
       return;
